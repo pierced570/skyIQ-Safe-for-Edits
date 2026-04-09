@@ -215,14 +215,12 @@ export default function TripSummaryPage() {
           </Link>
         </Button>
         <Button
-          asChild
           className="flex-1 bg-[#1a3a5c] hover:bg-[#2563eb]"
           disabled={hasErrors}
+          onClick={() => !hasErrors && navigate(`/trips/${tripId}/email`)}
         >
-          <Link to={`/trips/${tripId}/email`}>
-            <Mail className="mr-2 h-4 w-4" />
-            Send Email
-          </Link>
+          <Mail className="mr-2 h-4 w-4" />
+          Send Email
         </Button>
       </div>
     </div>

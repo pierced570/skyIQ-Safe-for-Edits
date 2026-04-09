@@ -126,7 +126,10 @@ export default function TripFuelPage() {
 
   if (!tripForm) return null;
 
-  const confirmedLegs = tripForm.legs.filter((l) => l.isConfirmed && l.legNum > 0);
+  // Build confirmed legs with their ORIGINAL indices into the full legs array
+  const confirmedLegsWithIndex = tripForm.legs
+    .map((leg, originalIndex) => ({ leg, originalIndex }))
+    .filter(({ leg }) => leg.isConfirmed && leg.legNum > 0);
 
   return (
     <div className="max-w-2xl mx-auto space-y-6 p-4">
@@ -158,7 +161,7 @@ export default function TripFuelPage() {
 
       {/* Per-Leg Fuel Burns */}
       <div className="space-y-3">
-        {confirmedLegs.map((leg, index) => (
+        {confirmedLegsWithIndex.map(({ leg, originalIndex }) => (
           <Card key={leg.legNum}>
             <CardContent className="pt-4">
               <div className="flex items-center justify-between">
@@ -171,8 +174,8 @@ export default function TripFuelPage() {
                 <div className="flex items-center gap-2">
                   <Input
                     type="number"
-                    value={fuelBurns[index] || ""}
-                    onChange={(e) => handleFuelBurnChange(index, parseFloat(e.target.value) || 0)}
+                    value={fuelBurns[originalIndex] || ""}
+                    onChange={(e) => handleFuelBurnChange(originalIndex, parseFloat(e.target.value) || 0)}
                     placeholder="Fuel burn (lbs)"
                     className="max-w-[160px]"
                   />

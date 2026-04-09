@@ -101,9 +101,9 @@ export default function NewTripPage() {
       <Card className="border-dashed border-2">
         <CardContent className="pt-6 text-center">
           <FileUp className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
-          <p className="font-medium">Upload Itinerary (PDF)</p>
+          <p className="font-medium">Start with an Itinerary</p>
           <p className="text-sm text-muted-foreground mb-4">
-            AI will parse your trip sheet and auto-fill everything
+            Create a trip and upload your PDF on the next page
           </p>
           <input
             ref={fileInputRef}
