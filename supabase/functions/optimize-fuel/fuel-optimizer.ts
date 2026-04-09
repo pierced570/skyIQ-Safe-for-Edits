@@ -153,7 +153,7 @@ class Stop {
     let feeTotal = 0.0;
     if (this.fees.length > 0) {
       const fee = this.fees[0]; // should be only one fuel fee
-      if (buy < fee.waived_at) {
+      if (buy < Math.floor(Number(fee.waived_at))) {
         feeTotal = fee.amount;
       }
     }
@@ -381,7 +381,7 @@ function findOptimalStrategy(stops: Stop[], startFuel: number): number {
     stop.start_fuel = gallonsToLbs(fuelAfterPurchase);
     stop.takeoff_fuel = gallonsToLbs(fuelAfterPurchase) - gallonsToLbs(stop.taxi_fuel_burn);
 
-    if (stop.takeoff_fuel < legMinReserveGallons && i !== n - 1) {
+    if (stop.takeoff_fuel < stop.min_fuel_reserve && i !== n - 1) {
       stop.errors.push(
         `ERROR: Takeoff fuel of ${Math.floor(gallonsToLbs(currentFuel))} is below the reserve set at ${stop.min_fuel_reserve}`,
       );
