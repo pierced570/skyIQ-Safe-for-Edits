@@ -1,0 +1,203 @@
+﻿@model TripRoughSummary
+@{
+    ViewData["Title"] = "Trip Summary";
+}
+
+<div class="container">
+    <h1 class="display-4">Trip @Model.Summary.ItineraryNum Summary</h1>
+    <div class="full-summary">
+        <p class="">Fuel Plan Summary for flight on @Model.Summary.AircraftNumber</p>
+        <div class="trip-rough-summary">
+            @for (int i = 0; i < Model.Summary.Legs.Count(); i++)
+            {
+                TripSummaryLeg leg = Model.Summary.Legs[i];
+                <div class="leg">
+                    <div class="row mb-2">
+                        <div class="col fw-bold">Leg @(i + 1): @leg.Departure --> @leg.Arrival</div>
+                    </div>
+                    <hr />
+                    @if(leg.Errors.Count() > 0){
+                        <div class="row mx-2">
+                            @foreach(string err in leg.Errors){
+                                <label class="field-validation-error ">@err</label>
+                            }
+                            <hr />
+                        </div>
+                    }
+                    <div class="row mx-2">
+                        <div class="col col-5 col-md-4 col-lg-3" style="font-weight: bold;">Fuel to Uplift (gal., lbs.)</div>
+                        <input class="col col" style="font-weight: bold;" value="@Math.Round(leg.FuelUpliftGals) gal., @Math.Round(leg.FuelUpliftLbs) lbs." disabled />
+                        <hr />
+                    </div>
+                    <div class="row mx-2">
+                        <div class="col col-5 col-md-4 col-lg-3 @(leg.TakeoffFuel < 0 ? "field-validation-error " : "")">Starting Fuel (lbs.)</div>
+                        <input class="col col @(leg.TakeoffFuel < 0 ? "field-validation-error " : "")" value="@Math.Round(leg.StartFuel) lbs." disabled />
+                        <hr />
+                    </div>
+                    <div class="row mx-2">
+                        <div class="col col-5 col-md-4 col-lg-3">Fuel Burn</div>
+                        <input class="col col" value="@Math.Round(leg.FuelBurn) lbs." disabled />
+                        <hr />
+                    </div>
+                    <div class="row mx-2">
+                        <div class="col col-5 col-md-4 col-lg-3 @(leg.LandingFuel < 0 ? "field-validation-error " : "")">Landing Fuel (lbs.)</div>
+                        <input class="col col @(leg.LandingFuel < 0 ? "field-validation-error " : "")" value="@Math.Round(leg.LandingFuel) lbs." disabled />
+                        <hr />
+                    </div>
+                    <div class="row mx-2">
+                        <div class="col col-5 col-md-4 col-lg-3">Takeoff Weight (lbs.)</div>
+                        <input class="col col" value="@Math.Round(leg.TakeoffWeight) lbs" disabled />
+                        <hr />
+                    </div>
+                    <div class="row mx-2">
+                        <div class="col col-5 col-md-4 col-lg-3 @(leg.LandingWeight < 0 ? "field-validation-error " : "")">Landing Weight (lbs.)</div>
+                        <input class="col col @(Math.Round(leg.LandingWeight) < 0 ? "field-validation-error " : "")" value="@Math.Round(leg.LandingWeight) lbs." disabled />
+                        <hr />
+                    </div>
+                    <div class="row mx-2">
+                        <div class="col col-5 col-md-4 col-lg-3">Fuel Cost ($)</div>
+                        <input class="col col" value="@string.Format("{0:C}", leg.FuelCost)" disabled />
+                        <hr />
+                    </div>
+                    <div class="row mx-2">
+                        <div class="col col-5 col-md-4 col-lg-3">Waived Fees (y/n)</div>
+                        <input class="col col" value="@(leg.HasWaivedFee ? (leg.FuelCost < leg.TotalCost ? "No; min required " + leg.FeeMin : "Yes; min required " + leg.FeeMin) : "No fees")" disabled />
+                        <hr />
+                    </div>
+                    <div class="row mx-2">
+                        <div class="col col-5 col-md-4 col-lg-3">Total Cost ($)</div>
+                        <input class="col col" value="@string.Format("{0:C}", leg.TotalCost)" disabled />
+                        <hr />
+                    </div>
+                </div>
+            }
+            <div class="d-flex justify-content-between">
+                <form class="plan-trip-form" asp-action="PlanTrip" method="post" enctype="multipart/form-data">
+                    @{
+                        TripDTO trip = Model.Trip;
+                        int summaryId = Model.Summary.Id;
+                        bool isFromBackBtn = true;
+                    }
+                    <input asp-for="@summaryId" type="hidden" />
+                    <input asp-for="@isFromBackBtn" type="hidden" />
+                    <input asp-for="@trip.ItineraryNum" type="hidden" />                    
+                    <input asp-for="@trip.StartingFuel" type="hidden" />
+                    <input asp-for="@trip.AircraftId" type="hidden" />
+                    @* <input asp-for="@trip.Reserve" type="hidden" /> *@
+                    <input asp-for="@trip.MaxFuelReserve" type="hidden" />
+                    <input asp-for="@trip.MaxTakeoffWeight" type="hidden" />
+                    <input asp-for="@trip.MaxLandingWeight" type="hidden" />
+                    <input asp-for="@trip.BasicEmptyWeight" type="hidden" />
+                    <input asp-for="@trip.Penalty" type="hidden" />
+                    <input asp-for="@trip.LbsPerHour" type="hidden" />
+
+                    @for(int i = 0; i < trip.Legs.Count(); i++)
+                    {
+                        <input asp-for="@trip.Legs[i].LegNum" type="hidden" />
+                        <input asp-for="@trip.Legs[i].Departure" type="hidden" />
+                        <input asp-for="@trip.Legs[i].Destination" type="hidden" />
+                        <input asp-for="@trip.Legs[i].Baggage" type="hidden" />
+                        <input asp-for="@trip.Legs[i].Distance" type="hidden" />
+                        <input asp-for="@trip.Legs[i].FuelBurn" type="hidden" />
+                        <input asp-for="@trip.Legs[i].CrewWeight" type="hidden" />
+                        <input asp-for="@trip.Legs[i].PassengerWeights" type="hidden" />
+                        <input asp-for="@trip.Legs[i].MaxTakeoffWeight" type="hidden" />
+                        <input asp-for="@trip.Legs[i].MaxLandingWeight" type="hidden" />
+                        <input asp-for="@trip.Legs[i].WaivedFee.Name" type="hidden" />
+                        <input asp-for="@trip.Legs[i].WaivedFee.Amount" type="hidden" />
+                        <input asp-for="@trip.Legs[i].WaivedFee.IsWaivable" type="hidden" />
+                        <input asp-for="@trip.Legs[i].WaivedFee.WaivedAt" type="hidden" />
+                        <input asp-for="@trip.Legs[i].WaivedFee.Airport" type="hidden" />
+                        <input asp-for="@trip.Legs[i].Reserve" type="hidden" />
+
+                        for (int j = 0; j < trip.Legs[i].DepartureFuelPrices.Count(); j++)
+                        {
+                            <input asp-for="@trip.Legs[i].DepartureFuelPrices[j].MinFuel" type="hidden" />
+                            <input asp-for="@trip.Legs[i].DepartureFuelPrices[j].Price" type="hidden" />
+                        }                        
+                    }
+                    <button class="card-btn flex">
+                        <div class="title">Go Back</div>
+                        <div class="description">Return to plan trip form to fix any errors with the flight</div>
+                    </button>
+                </form>
+                <form class="plan-trip-form" asp-action="TripEmailList" method="post" enctype="multipart/form-data">
+                    @{TripSummary summary = Model.Summary;}
+                    <input asp-for="@summary.Id" type="hidden" />
+                    <input asp-for="@summary.ItineraryNum" type="hidden"/>
+                    <input asp-for="@summary.AircraftNumber" type="hidden" />
+                    <input asp-for="@summary.Savings" type="hidden" />
+                    @for (int i = 0; i < summary.Legs.Count(); i++)
+                    {
+                        <input asp-for="@summary.Legs[i].Arrival" type="hidden" />
+                        <input asp-for="@summary.Legs[i].Departure" type="hidden" />
+                        <input asp-for="@summary.Legs[i].TakeoffWeight" type="hidden" />
+                        <input asp-for="@summary.Legs[i].LandingWeight" type="hidden" />
+                        <input asp-for="@summary.Legs[i].StartFuel" type="hidden" />
+                        <input asp-for="@summary.Legs[i].TakeoffFuel" type="hidden" />
+                        <input asp-for="@summary.Legs[i].LandingFuel" type="hidden" />
+                        <input asp-for="@summary.Legs[i].FuelBurn" type="hidden" />
+                        <input asp-for="@summary.Legs[i].FuelUpliftLbs" type="hidden" />
+                        <input asp-for="@summary.Legs[i].FuelUpliftGals" type="hidden" />
+                        <input asp-for="@summary.Legs[i].FuelCost" type="hidden" />
+                        <input asp-for="@summary.Legs[i].HasWaivedFee" type="hidden" />
+                        <input asp-for="@summary.Legs[i].FeeMin" type="hidden" />
+                        <input asp-for="@summary.Legs[i].TotalCost" type="hidden" />
+                    }
+                    @{
+                        TripDTO trip = Model.Trip;
+                    }
+                    <input asp-for="@trip.ItineraryNum" type="hidden" />
+                    <input asp-for="@trip.StartingFuel" type="hidden" />
+                    <input asp-for="@trip.AircraftId" type="hidden" />
+                    @* <input asp-for="@trip.Reserve" type="hidden" /> *@
+                    <input asp-for="@trip.MaxFuelReserve" type="hidden" />
+                    <input asp-for="@trip.MaxTakeoffWeight" type="hidden" />
+                    <input asp-for="@trip.MaxLandingWeight" type="hidden" />
+                    <input asp-for="@trip.BasicEmptyWeight" type="hidden" />
+
+                    @for (int i = 0; i < trip.Legs.Count(); i++)
+                    {
+                        <input asp-for="@trip.Legs[i].LegNum" type="hidden" />
+                        <input asp-for="@trip.Legs[i].Departure" type="hidden" />
+                        <input asp-for="@trip.Legs[i].Destination" type="hidden" />
+                        <input asp-for="@trip.Legs[i].Baggage" type="hidden" />
+                        <input asp-for="@trip.Legs[i].Distance" type="hidden" />
+                        <input asp-for="@trip.Legs[i].FuelBurn" type="hidden" />
+                        <input asp-for="@trip.Legs[i].CrewWeight" type="hidden" />
+                        <input asp-for="@trip.Legs[i].PassengerWeights" type="hidden" />
+                        <input asp-for="@trip.Legs[i].MaxTakeoffWeight" type="hidden" />
+                        <input asp-for="@trip.Legs[i].MaxLandingWeight" type="hidden" />
+                        <input asp-for="@trip.Legs[i].WaivedFee.Name" type="hidden" />
+                        <input asp-for="@trip.Legs[i].WaivedFee.Amount" type="hidden" />
+                        <input asp-for="@trip.Legs[i].WaivedFee.IsWaivable" type="hidden" />
+                        <input asp-for="@trip.Legs[i].WaivedFee.WaivedAt" type="hidden" />
+                        <input asp-for="@trip.Legs[i].WaivedFee.Airport" type="hidden" />
+                        <input asp-for="@trip.Legs[i].Reserve" type="hidden" />
+
+                        for (int j = 0; j < trip.Legs[i].DepartureFuelPrices.Count(); j++)
+                        {
+                            <input asp-for="@trip.Legs[i].DepartureFuelPrices[j].MinFuel" type="hidden" />
+                            <input asp-for="@trip.Legs[i].DepartureFuelPrices[j].Price" type="hidden" />
+                        }
+                    }
+                    <button class="card-btn flex" type="submit" @(Model.Summary.Legs.Any(l => l.Errors.Count() > 0) ? "disabled" : "")>
+                        <div class="title">Summary Export</div>
+                        <div class="description">Finalize trip and view PDF Fuel Plan Complete Summary + Quick Ref Guide</div>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".switch-summary").on("click", function(){
+                $(".quick-ref-summary").toggle();
+                $(".full-summary").toggle();
+            })
+        })
+    </script>
+}

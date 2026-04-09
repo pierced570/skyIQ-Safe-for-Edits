@@ -1,0 +1,950 @@
+﻿@model TripDTO
+@{
+    ViewData["Title"] = "Plan a Trip";
+    //List<string> passengerWeights
+    List<Aircraft> aircrafts = (List<Aircraft>)ViewData["Aircrafts"];
+    int summaryId = (int)ViewData["SummaryId"];
+    bool isFromBackBtn = (bool)ViewData["IsFromBackBtn"];
+}
+
+<div class="container">
+    <h1 class="display-4">Plan a Trip</h1>
+    <form class="plan-trip-form" asp-action="TripRoughSummary" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="@summaryId"/>
+        <div class="header-plan-trip mb-4">
+
+            <span class=" d-flex"> Trip Details for flight on 
+                <select class="form-select aircraft-select" asp-for="AircraftId" required>
+                    <option value="-1" disabled selected>Select an Aircraft</option>
+                    @foreach(Aircraft plane in aircrafts){
+                        string weight = "0"; 
+                        if(plane.DefaultPICWeight > 0 && plane.DefaultSICWeight > 0){
+                            weight = plane.DefaultPICWeight + ", " + plane.DefaultSICWeight;
+                        }
+                        else if(plane.DefaultPICWeight > 0) {
+                            weight = plane.DefaultPICWeight.ToString();
+                        }
+                        else if(plane.DefaultSICWeight > 0){
+                            weight = plane.DefaultSICWeight.ToString();
+                        }
+                        if(plane.DefaultCabinWeight > 0){
+                            if (weight != "0"){
+                                weight += ", " + plane.DefaultCabinWeight;
+                            }
+                            else {
+                                weight = plane.DefaultCabinWeight.ToString();
+                            }
+                        }
+
+                        <option data-maxtakeoff="@plane.MaxTakeoffWeight" data-maxlanding="@plane.MaxLandingWeight" data-reserve="@plane.PreferredReserve" data-baggage-w-pax="@plane.DefaultBaggageWithPax" data-baggage-wo-pax="@plane.DefaultBaggageNoPax"
+                        data-maxfuel="@plane.MaxFuelCapacity" data-basicempty="@plane.BasicEmptyWeight" data-taxifuel="@plane.TaxiFuelBurn" data-maxramp="@plane.MaxRampWeight"
+                        data-defaultcrew="@weight" data-penalty="@plane.PenaltyRate" data-lbsperhour="@plane.CruiseFuelBurn">@plane.TailNumber</option>
+                    }
+                    <option value="-2"><span class="icon-plus">+</span>Add Aircraft</option>
+                </select>
+            </span>
+        </div>
+        <label class="error" id="import-aircraft-error">Aircraft '@Model.AircraftId' does not exist in the database or is disabled.</label>
+        @foreach(string error in Model.ImportErrors){
+            <label class="error import-error">@error</label>
+        }
+        <input type="hidden" asp-for="MaxTakeoffWeight"/>
+        <input type="hidden" asp-for="MaxLandingWeight"/>
+        <input type="hidden" asp-for="MaxFuelReserve"/>
+        <input type="hidden" asp-for="BasicEmptyWeight"/>
+        <input type="hidden" asp-for="ItineraryNum" />
+        <input type="hidden" asp-for="Penalty" />
+        <input type="hidden" asp-for="LbsPerHour" />
+        @* <input type="hidden" asp-for="Reserve"/> *@
+        <div class="trip-details">
+            @for(int i = 0; i < Model.Legs.Count(); i++)
+            {
+            <div class="leg" data-leg="@(i+1)">                  
+                <input type="hidden" asp-for="Legs[i].LegNum" value="@(i+1)"/>
+                <div class="leg-title" style="font-weight: bold;">Leg <span class="leg-num">@(i+1)</span>:</div>
+                <div class="row mb-2">
+
+                    <div class="col-12 col-sm-5 col-md-5">
+                        <label asp-for="Legs[i].Departure">Departure <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="Confirm this is the correct departure airport"></i></label>
+                    </div>
+                    <div class="col">
+                        <input type="text" asp-for="Legs[i].Departure" required/>
+                    </div>
+
+                </div>
+                <div class="row mb-2">
+
+                    <div class="col-12 col-sm-5 col-md-5">
+                            <label asp-for="Legs[i].Destination">Destination <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="Confirm this is the correct destination airport"></i></label>
+                    </div>
+                    <div class="col">
+                        <input type="text" asp-for="Legs[i].Destination" required/>
+                    </div>
+                </div>
+                <div class="row mb-2">
+
+                    <div class="col-12 col-sm-5 col-md-5">
+                            <label asp-for="Legs[i].WaivedFee">Departure Airport Fuel Fee (@(Model.Legs[i].WaivedFee.Airport ?? "No Fee Found")) <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="Confirm the cost in dollars of the fee you can waive in the first column and amount of gallons that “will waive” your fee in the second column. Please cross check your itinerary for accuracy"></i></label>
+                        <input asp-for="Legs[i].WaivedFee.Airport" type="hidden" />
+                    </div>
+                    <div class="col-12 col-sm-7 col-md-7">
+                        <div class="row">
+                            <div class="col-6">
+                                <label class="col" asp-for="Legs[i].WaivedFee.Amount">Fee Cost (USD) <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="This is the price in Dollars of the fee you have the option to waive"></i></label>
+                                <div class="amount-input"><span class="dollar-sign">$</span><input class="col" type="number" asp-for="Legs[i].WaivedFee.Amount" /></div>
+                            </div>
+                            <div class="col-6">
+                                <label class="col" asp-for="Legs[i].WaivedFee.WaivedAt">Waived With <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="This is the minimum numbe rof gallons required to waive the fee"></i></label>
+                                <input class="col" type="number" asp-for="Legs[i].WaivedFee.WaivedAt"/>  
+                            </div>
+                            <input type="hidden" asp-for="Legs[i].WaivedFee.IsWaivable" value="true" />
+                        </div>
+                    </div>          
+                </div>                    
+                <div class="row mb-2">
+
+                    <div class="col-12 col-sm-5 col-md-5">
+                        <label asp-for="Legs[i].CrewWeight">Crew Weights (lbs.) <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="Confirm weights of the entire crew are entered and correct. PIC, SIC, and FA if applicable"></i></label>
+                    </div>
+                    <div class="col">
+                        <input type="text" asp-for="Legs[i].CrewWeight" placeholder="x,x,x" />
+                    </div>
+                </div>
+                <div class="row mb-2">
+
+                    <div class="col-12 col-sm-5 col-md-5">
+                        <label asp-for="Legs[i].PassengerWeights">Passenger Weights (lbs.) <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="Confirm weights of the passengers are all entered and correct. Please cross check your itinerary for accuracy"></i></label>
+                    </div>
+                    <div class="col">
+                        <input type="text" asp-for="Legs[i].PassengerWeights" placeholder="x,x,x" />
+                    </div>
+                </div>
+                <div class="row mb-2">
+
+                    <div class="col-12 col-sm-5 col-md-5">
+                        <label asp-for="Legs[i].Baggage">Baggage <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="Confirm correct weight of total bags or cago on board the aircraft. Please cross check your itinerary for accuracy"></i></label>
+                    </div>
+                    <div class="col">
+                        <input type="number" asp-for="Legs[i].Baggage" required />
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-12 col-sm-5 col-md-5">
+                        <label>Departure Fuel Prices <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="Confirm the minimum quantity of fuel to be uplifted in gallons to obtain your fuel price in column one and the correct price per gallon in column two. Please cross check your itinerary for accuracy"></i></label>
+                    </div>
+                    <div class="col">
+                        <div class="row dept-fuel-prices">
+                    @for (int f = 0; f < Model.Legs[i].DepartureFuelPrices.Count(); f++)
+                    {
+                        if(f != 0){
+                            <div class="add-fuel-price"></div>
+                        }
+                            <div class="col-6" data-idx="@f">
+                                <label class="add-fuel-price" asp-for="Legs[i].DepartureFuelPrices[f].Price">Price Per Gallon ($USD)  <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="This is your price per gallon for a given quantity of fuel"></i></label>
+                                <div class="amount-input"><span class="dollar-sign">$</span><input class="add-fuel-price" type="number" asp-for="Legs[i].DepartureFuelPrices[f].Price" required /></div>
+                            </div>
+                            <div class="col-6" data-idx="@f">
+                                <label class="add-fuel-price" asp-for="Legs[i].DepartureFuelPrices[f].MinFuel">Min Quantity per Rate (gal) <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="This is the minimum quantity of fuel required to uplift in gallons in order to obtain a specific fuel rate. Ex) +1 gallon = $5.00/gal, +200 gallons = $4.50/gal, +500gallons = $4.00/gal"></i></label>
+                                <input class="add-fuel-price" type="number" asp-for="Legs[i].DepartureFuelPrices[f].MinFuel" min="1" required />
+                            </div>
+                        if (f == Model.Legs[i].DepartureFuelPrices.Count() - 1)
+                        {
+                            <div class="col">
+                                <div class="card-btn add-fuel-price gray flex" data-idx="@f" data-leg="@i">
+                                    <div class="title">Add fuel price option</div>
+                                    <div class="description"></div>
+                                </div>
+                                <div class="card-btn remove-fuel-price gray flex" data-idx="@f" data-leg="@i">
+                                    <div class="title">Remove fuel price option</div>
+                                    <div class="description"></div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    @if(Model.Legs[i].DepartureFuelPrices.Count() == 0){
+
+                            <div class="">
+                                <div class="card-btn add-fuel-price gray flex" data-idx="0" data-leg="@i">
+                                    <div class="title">Add fuel price option</div>
+                                    <div class="description"></div>
+                                </div>
+                                <div class="card-btn remove-fuel-price gray flex" data-idx="0" data-leg="@i">
+                                    <div class="title">Remove fuel price option</div>
+                                    <div class="description"></div>
+                                </div>
+                            </div>
+                    }
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-12 col-sm-5 col-md-5">
+                        <label asp-for="Legs[i].Reserve">Reserve <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="This is the minimum fuel you are comfortable with landing for this leg"></i></label>
+                    </div>
+                    <div class="col">
+                        <input type="text" asp-for="Legs[i].Reserve"/>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-12 col-sm-5 col-md-5">
+                        <label class="" asp-for="Legs[i].TaxiFuelBurn">Taxi Fuel Burn (lbs.) <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="This is the estimated fuel you will burn taxiing on this leg"></i></label>
+                    </div>
+                    <div class="col">
+                        <input class="" type="number" asp-for="Legs[i].TaxiFuelBurn" />
+                    </div>
+                </div>
+                @* <div class="row mb-2">
+                    <div class="col-12 col-sm-5 col-md-5">
+                        <label class="" asp-for="Legs[i].MaxRampWeight">Max Ramp Weight (lbs.)</label>
+                    </div>
+                    <div class="col">
+                        <input class="" type="number" asp-for="Legs[i].MaxRampWeight" />
+                    </div>
+                </div> *@
+                <input class="" type="hidden" asp-for="Legs[i].MaxRampWeight" />
+                <div class="row mb-2">
+                    <div class="col-12 col-sm-5 col-md-5">
+                            <label asp-for="Legs[i]">Max Takeoff Weight (lbs.) <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="Please verify your max takeoff weight is low enough to allow for sufficient runway upon takeoff"></i></label>
+                    </div>
+                    <div class="col">
+                        <input type="number" asp-for="Legs[i].MaxTakeoffWeight" required />
+                    </div>
+                </div> 
+                <div class="row mb-2">
+                    <div class="col-12 col-sm-5 col-md-5">
+                        <label asp-for="Legs[i].MaxLandingWeight">Max Landing Weight (lbs.) <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="Please verify max landing weight is low enough to allow for sufficient runway upon landing"></i></label>
+                    </div>
+                    <div class="col">
+                        <input type="number" asp-for="Legs[i].MaxLandingWeight" required />
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-12 col-sm-5 col-md-5"></div>
+                    <div class="col" style="font-size: .8rem; text-align: center;">
+                        Be Sure to Adjust Max Takeoff &amp; Max Landing weights to ensure sufficient Runway.
+                    </div>
+                </div>
+                <div class="confirm-leg">
+                    <p class="confirm-text">Please confirm this is correct (Leg <strong class="leg-num">@(i + 1)</strong>/<span class="total-legs">@(Model.Legs.Count())</span>)</p>
+                    <div class="confirm-leg-div">
+                        <div class="d-flex">
+                            <div class="card-btn confirm-leg-option yes">
+                                <input type="radio" name="confirm-leg-@(i+1)" value="true" hidden/>
+                                <div class="title">Yes</div>
+                                <div class="description">This represents my trip accurately</div>
+                            </div>
+                            <div class="card-btn confirm-leg-option no">
+                                <input type="radio" name="confirm-leg-@(i+1)" value="false" hidden/>
+                                <div class="title">Leg Not Needed</div>
+                                <div class="description">Leg is completed or unnecessary and will be removed from calculations</div>
+                            </div>
+                            <button type="button" class="remove-leg" hidden></button>
+                        </div>
+                        <div class="adjust-legs">
+                            <button class="btn card-btn add-leg" type="button"><div class="title">Add Leg</div></button>
+                        </div>
+                    </div>
+                </div>
+            </div>   
+            }
+            <button class="btn card-btn next-btn" type="button" disabled>
+                <div class="title">Next</div>
+                <div class="description">Starting fuel and fuel burns</div>
+            </button>
+        </div>
+        <div class="trip-fuel-details">
+
+            <div class="mb-4">
+                <strong>Click to select an input starting fuel at origin for your trip</strong>
+            <div class="row my-3">
+                <label class="col col-6" asp-for="StartingFuel"><strong>Current Fuel on Board Aircraft</strong> <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="Please type in the current fuel on board the aircraft"></i></label>
+                <input class="col col-6" type="number" asp-for="StartingFuel" required />
+            </div>
+            @* <div class="row my-3">                
+                <label class="col col-6" asp-for="Reserve">Reserve</label>
+                <input class="col col-6" type="number" asp-for="Reserve" required />
+            </div> *@
+            </div>
+            <div class="mb-4">
+                <p class="mb-1"><strong>Click to select an input fuel burn for each leg your trip</strong></p>
+                <p><strong>Fuel Burn</strong> for flight</p>
+                @for (int i = 0; i < Model.Legs.Count(); i++)
+                {
+                    <div class="row mx-2 my-3 fuel-burn-row" data-leg="@(i+1)">
+                        <label class="col col-2">Leg <span class="leg-num">@(i + 1)</span>: </label>
+                        <div class="col col-2 departure">@Model.Legs[i].Departure</div>
+                        <div class="col col-2 destination">@Model.Legs[i].Destination</div>
+                        <input class="col col-6" type="number" asp-for="Legs[i].FuelBurn" required />
+                    </div>
+                }
+
+            </div>
+            <button class="btn btn-primary submit-btn" type="submit">Confirm trip</button>
+            <button class="btn btn-outline-secondary back-btn" type="button">Return to previous page</button>
+        </div>
+    </form>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="remove-leg-modal" data-leg-to-remove="">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Remove Leg <span id="leg-num"></span></h5>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove this leg from your trip?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="confirm-remove-leg">Delete Leg</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="add-leg-modal" data-current-leg="">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Leg</h5>
+            </div>
+            <div class="modal-body">
+                <button class="btn card-btn add-leg-blank">
+                    <div class="title">No Itinerary</div>
+                    <div class="description">Add a blank new leg and fill out all the details</div>
+                </button>
+                <form class="upload-itinerary-form" asp-action="UploadExtraItinerary" method="post" enctype="multipart/form-data">
+                    <div class="upload-container">
+                        <input type="file" name="formFile" class="file-input" accept="application/pdf" id="fileInput" required>
+                        <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-file-pdf file-icon"></i>
+                            <span class="file-name">Upload Itinerary HERE</span>
+                            <button class="remove-btn" onclick="removeFile(event)" type="button"><i class="fas fa-times"></i></button>
+                        </div>
+
+                        <span class="field-validation-error">No trip detected. Please select a file and try again.</span>
+                        <span class="text-danger error" style="display: none;">There was an error parsing this text</span>
+                        <div>
+                            <button class="btn btn-upload-submit" type="submit"><i class="fas fa-arrow-right"></i></button>
+                            <div>Add</div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="/Views/Shared/_LoadingModal.cshtml" />
+
+
+@section Scripts {
+<script type="text/javascript">
+    $(document).ready(function() {
+        let True = true;
+        let False = false;
+        let isNewAircraftSelection = true;
+        let cloneLeg = $(".trip-details .leg[data-leg=1]").clone(true);
+        let cloneBurn = $(".trip-fuel-details .fuel-burn-row:first").clone(true);
+
+        if (@(!String.IsNullOrEmpty(Model.AircraftId)) || @(!String.IsNullOrEmpty(Model.ItineraryNum))) {
+            $("form.plan-trip-form .trip-details").show() 
+            let airid = $("#AircraftId").val()
+            if(airid == "-1" || airid == null){
+                $("#import-aircraft-error").show()
+            }
+            else {
+                let aircraft = $(this).find(':selected');
+                var takeoff = $(aircraft).data("maxtakeoff");
+                var maxlanding = $(aircraft).data("maxlanding");
+                var maxfuel = $(aircraft).data("maxfuel");
+                var basicempty = $(aircraft).data("basicempty");
+                var reserve = $(aircraft).data("reserve");
+                var taxifuel = $(aircraft).data("taxifuel");
+                var maxramp = $(aircraft).data("maxramp");
+                var defaultcrew = $(aircraft).data("defaultcrew")
+                var penalty = $(aircraft).data("penalty")
+                var lbsperhour = $(aircraft).data("lbsperhour")
+
+
+
+                $("input[name$='MaxLandingWeight']").val(maxlanding);
+                $("input[name$='MaxTakeoffWeight']").val(takeoff);
+                $("#MaxFuelReserve").val(maxfuel);
+                $("#BasicEmptyWeight").val(basicempty);
+                $("input[name$='.Reserve']").val(reserve);
+                $("input[name$='WaivedFee.Amount'], input[name$='Price']").each(function() {
+                    $(this).val(parseFloat($(this).val()).toFixed(2));
+                })
+                $("input[name$='TaxiFuelBurn']").val(taxifuel); 
+                $("input[name$='MaxRampWeight']").val(maxramp); 
+                $("input[name$='CrewWeight']").val(defaultcrew);
+                $("input[name$='Penalty']").val(penalty);
+                $("input[name$='LbsPerHour']").val(lbsperhour);
+                
+                isNewAircraftSelection = false;
+
+            }
+            
+        }
+        var numLegs = @Model.Legs.Count();
+
+        if(numLegs == 1){
+            $(".remove-leg").attr("disabled", "disabled")
+            $(".confirm-leg-option.no").attr("disabled", "disabled").addClass("disabled")
+        }
+
+        if(@(isFromBackBtn)){
+                $(".trip-details").hide();
+                $(".trip-fuel-details").show();
+        }
+        $(".trip-details .leg[data-leg=1]").show();
+
+        $("form.plan-trip-form").validate({
+            submitHandler: () => {
+                form.submit;
+            },
+            invalidHandler: function(event, validator) {
+                for(var i = 0; i < validator.numberOfInvalids(); i++){
+                    var error = validator.errorList[i]?.element;
+                    //$(error).closest(".leg").find(".confirm-leg-option.no").click();
+                    if(i == 0){
+                        $(error).focus();
+                    }
+                }
+            }
+        })
+        $('[data-toggle="tooltip"]').tooltip()
+        $(".aircraft-select").on("change", function() {
+            if($(this).val() == -2){
+                window.location.href = "/Fleet/AddPlane";
+            }
+            else if ($(this).val() != -1) {
+                $("form.plan-trip-form .trip-details").show(); 
+                $(".trip-fuel-details").hide(); 
+            }
+        })
+        $(".trip-details").on("click", ".confirm-leg-option:not(.no.disabled)", function() {   
+            $(this).parent().find(".active").removeClass("active");
+            $(this).addClass("active");
+            $(this).find("input[type=radio]").prop('checked', true);
+            var numValidatedLegs = $("input[name^='confirm-leg'][value='true']:checked").length; 
+            var legOrig = parseInt($(this).closest(".leg").attr("data-leg"))
+            //console.log($(this))
+            var leg = legOrig + 1;
+            if($(this).hasClass("yes")){
+                $(".trip-details .leg[data-leg='" + leg + "'").show();            
+            }
+            else if($(this).hasClass("no")){
+                $("#remove-leg-modal").data("leg-to-remove", legOrig)
+                $("#remove-leg-modal span#leg-num").text(legOrig)
+                $("#remove-leg-modal").modal("show");
+            }
+            if (numValidatedLegs >= numLegs) {
+                let valid = $("form.plan-trip-form").valid();
+                if(valid)
+                {
+                    // $(".trip-details").hide();
+                    // $(".header-plan-trip").hide();
+                    // $(".trip-fuel-details").show();
+                    $(".next-btn").attr("disabled", false);
+                }
+                else {
+                    $(".next-btn").attr("disabled", true);                   
+                }
+            }
+            else {
+                $(".next-btn").attr("disabled", true);
+            }
+        })
+        $(".trip-details").on("change", "input[name='passengerweights']", function(){
+            var str = $(this).val(); 
+            str = str.trim();
+            if (str.endsWith(",")) {
+                str = str.slice(0, str.length - 1);
+            }
+            str = str.replace(/[A-Za-z!@@#$%^&*()]/g, '');
+            var leg = $(this).closest(".leg");
+            var legIdx = parseInt($(leg).attr("data-leg")) - 1;
+            var weights = str.split(",")
+            $(this).val(str);
+            $(leg).find("input[name='Legs[" + legIdx + "].NumPassengers']").val(weights.length);           
+        })
+        $(".back-btn").on("click", function() {            
+            $(".trip-details").show();
+            $(".header-plan-trip").show();
+            $(".trip-fuel-details").hide();
+        })
+        $(".next-btn").on("click", function() {
+            let valid = $("form.plan-trip-form").valid();
+            if(valid){
+                $(".trip-details").hide();
+                $(".trip-fuel-details").show();
+            }
+            else {
+                $(".next-btn").attr("disabled", true);
+
+            }
+        })
+
+        $("#AircraftId").on("change", function() {
+            let aircraft = $(this).find(':selected');
+            var takeoff = $(aircraft).data("maxtakeoff");
+            var maxlanding = $(aircraft).data("maxlanding");
+            var maxfuel = $(aircraft).data("maxfuel");            
+            var basicempty = $(aircraft).data("basicempty");
+            var reserve = $(aircraft).data("reserve");
+            var taxifuel = $(aircraft).data("taxifuel");
+            var maxramp = $(aircraft).data("maxramp");
+            var penalty = $(aircraft).data("penalty");
+            var lbsperhour = $(aircraft).data("lbsperhour");
+            var baggagePax = $(aircraft).data("baggage-w-pax");
+            var baggageNoPax = $(aircraft).data("baggage-wo-pax");
+            var defaultcrew = $(aircraft).data("defaultcrew");
+
+
+            $("input[name$='MaxLandingWeight']").val(maxlanding); 
+            $("input[name$='MaxTakeoffWeight']").val(takeoff);
+            $("input[name$='Reserve']").val(reserve);
+            $("input[name$='TaxiFuelBurn']").val(taxifuel);
+            $("input[name$='MaxRampWeight']").val(maxramp);
+            $("input[name$='Penalty']").val(penalty);
+            $("input[name$='LbsPerHour']").val(lbsperhour);
+            $("#MaxFuelReserve").val(maxfuel);
+            $("#BasicEmptyWeight").val(basicempty);
+            // $("#Reserve").val(reserve);
+            if(isNewAircraftSelection){
+                $("input[name$='Baggage'").each(function(){
+                    let pax = $(this).closest('.leg').find("input[name$='PassengerWeights']").val()
+                    if(pax != '0' && pax != undefined && pax.length > 0){
+                        $(this).val(baggagePax);
+                    }
+                    else {
+                        $(this).val(baggageNoPax);
+                    }
+                })
+
+                $("input[name$='CrewWeight']").val(defaultcrew);
+            }
+            $("input[name$='CrewWeight'][value='0'], input[name$='CrewWeight'][value='']").val(defaultcrew);
+            
+        })
+        $("body").on("change", "input[name$='WaivedFee.Amount'], input[name$='Price']",function() {
+            $(this).val(parseFloat($(this).val()).toFixed(2));
+        })
+        $("body").on("click", ".btn.add-leg", function() {
+            $("#add-leg-modal").attr("data-current-leg", $(this).closest(".leg").attr("data-leg"))
+            $("#add-leg-modal").modal("show")
+        })
+        $("body").on("click", ".btn.add-leg-blank", function() {
+            $("#add-leg-modal").modal("hide")
+            var leg = $(".leg[data-leg=1]");
+            var newId = $(".trip-details .leg").length;
+            // var newLegNum = newId+ 1;
+            var currentLeg = $(this).closest(".modal").data("current-leg")
+            var newLegNum = parseInt(currentLeg) + 1
+
+            var newLeg = cloneLeg.clone(true);
+            newLeg.attr("data-leg", newLegNum).attr("style", "display: block;");
+            newLeg.find(".leg-title .leg-num").text(newLegNum);
+            newLeg.find(".confirm-text .leg-num").text(newLegNum);
+
+            newLeg.find('[id]').each(function(){
+                var currentAttr = $(this); 
+                var currentAttrId = currentAttr.attr('id');
+                var newAttrId = currentAttrId.replace(/(0)/, newId)
+                currentAttr.attr('id', newAttrId);
+            })
+            newLeg.find('[name]').each(function(){
+                var currentAttr = $(this); 
+                var currentAttrId = currentAttr.attr('name');
+                var newAttrId = currentAttrId.replace(/(0)/, newId)
+                currentAttr.attr('name', newAttrId);
+            })
+            newLeg.find('[for]').each(function(){
+                var currentAttr = $(this); 
+                var currentAttrId = currentAttr.attr('for');
+                var newAttrId = currentAttrId.replace(/(0)/, newId)
+                // console.log(newAttrId)
+                currentAttr.attr('for', newAttrId);
+            })
+            newLeg.find("[name='confirm-leg-1']").attr("name", "confirm-leg-" + newLegNum);
+            newLeg.find("input").not('input[type="radio"]').val('');
+            newLeg.find(".confirm-leg-option.no").click(); 
+            newLeg.find(".add-fuel-price .leg-num").attr("data-leg", newLegNum);
+            newLeg.find(".remove-fuel-price .leg-num").attr("data-leg", newLegNum);
+            
+
+            let aircraft = $("#AircraftId").find(':selected');
+            var takeoff = $(aircraft).data("maxtakeoff");
+            var maxlanding = $(aircraft).data("maxlanding");
+            var reserve = $(aircraft).data("reserve");
+            var taxifuel = $(aircraft).data("taxifuel");
+            var maxramp = $(aircraft).data("maxramp");
+            var baggageNoPax = $(aircraft).data("baggage-wo-pax")
+            var defaultcrew = $(aircraft).data("defaultcrew");
+
+            newLeg.find("input[name$='MaxLandingWeight']").val(maxlanding);
+            newLeg.find("input[name$='MaxTakeoffWeight']").val(takeoff);
+            newLeg.find("input[name$='Reserve']").val(reserve);
+            newLeg.find("input[name$='TaxiFuelBurn']").val(taxifuel);
+            newLeg.find("input[name$='MaxRampWeight']").val(maxramp);
+            newLeg.find("input[name$='LegNum']").val(newLegNum);
+            newLeg.find("input[name$='Baggage']").val(baggageNoPax);
+            newLeg.find("input[name$='CrewWeight']").val(defaultcrew);
+
+            newLeg.find(".dept-fuel-prices .col-6:not([data-idx='0'])").remove()
+
+            $(".trip-details .leg").each(function(){
+                var legNum = parseInt($(this).attr("data-leg"))
+                if(legNum >= newLegNum){
+                    legNum++
+
+                    $(this).attr("data-leg", legNum);
+                    $(this).find(".leg-title .leg-num").text(legNum);
+                    $(this).find(".confirm-text .leg-num").text(legNum);
+                    $(this).find("[name^='confirm-leg-']").attr("name", "confirm-leg-" + legNum);
+                    $(this).find("input[name$='LegNum']").val(legNum);
+                    $(this).hide();
+
+                }
+            })
+
+            $(".trip-details .leg[data-leg='" + currentLeg + "']").after(newLeg);
+
+
+            //<input type="radio" name="confirm-leg-(i + 1)" value="true" hidden/>
+            var newBurn = cloneBurn.clone(true);
+            newBurn.find("span.leg-num").text(newLegNum);
+            newBurnId = newBurn.find("input").attr('id');
+            newBurnName = newBurn.find("input").attr("name");
+            newBurn.find("input").attr("id", newBurnId.replace(/(0)/, newId)).attr("name", newBurnName.replace(/(0)/, newId));
+            newBurn.attr("data-leg", newLegNum);
+
+            $(".trip-fuel-details .fuel-burn-row").each(function(){
+                var legNum = parseInt($(this).attr("data-leg"))
+                if(legNum >= newLegNum){
+                    legNum++
+
+                    $(this).attr("data-leg", legNum);
+                    $(this).find("span.leg-num").text(legNum);
+
+                }
+            })
+
+            $(".trip-fuel-details .fuel-burn-row[data-leg='" + currentLeg + "']").after(newBurn).show();
+
+            numLegs++;
+            $(".confirm-text .total-legs").text(numLegs);
+            if(numLegs == 1){
+                $(".remove-leg").attr("disabled", "disabled")
+                $(".confirm-leg-option.no").attr("disabled", "disabled").addClass("disabled")
+            }
+            else {
+                $(".remove-leg").removeAttr("disabled")
+                $(".confirm-leg-option.no").removeAttr("disabled").removeClass("disabled")
+            }
+
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+        $(".upload-itinerary-form").on("submit", function(e) {
+            e.preventDefault();
+            $("#loadingModal").modal('show');
+            var formData = new FormData(); 
+            var fileInput = $(this).find("input#fileInput")[0].files;
+            
+            if(fileInput.length > 0){
+                formData.append('formFile', fileInput[0])
+            }
+
+            $.ajax({
+                method: "POST", 
+                url: "UploadExtraItinerary",
+                data: formData,processData: false,
+                contentType: false,
+                cache: false,
+                enctype: 'multipart/form-data', 
+                success: function(response) {
+                    console.log(response)
+                    $("#add-leg-modal").modal("hide");
+                    $("#loadingModal").modal('hide');
+                    if(response.length > 0){
+                        var leg = $(".leg[data-leg=1]");
+                        var legs = [];
+                        var fuelBurns = []; 
+                        var newId = $(".trip-details .leg").length;
+                        // var newLegNum = newId+ 1;
+                        var currentLeg = origLeg = $("#add-leg-modal").data("current-leg")
+                        var newLegNum = parseInt(currentLeg) + 1
+                        for(var i = 0; i < response.length; i++){
+                            var newLeg = cloneLeg.clone(true);
+                            newLeg.attr("data-leg", newLegNum)
+                            if(i == 0){
+                                newLeg.attr("style", "display: block;");
+                            }
+                            newLeg.find(".leg-title .leg-num").text(newLegNum);
+                            newLeg.find(".confirm-text .leg-num").text(newLegNum);
+
+                            newLeg.find('[id]').each(function(){
+                                var currentAttr = $(this);
+                                var currentAttrId = currentAttr.attr('id');
+                                var newAttrId = currentAttrId.replace(/(0)/, newId)
+                                currentAttr.attr('id', newAttrId);
+                            })
+                            newLeg.find('[name]').each(function(){
+                                var currentAttr = $(this);
+                                var currentAttrId = currentAttr.attr('name');
+                                var newAttrId = currentAttrId.replace(/(0)/, newId)
+                                currentAttr.attr('name', newAttrId);
+                            })
+                            newLeg.find('[for]').each(function(){
+                                var currentAttr = $(this);
+                                var currentAttrId = currentAttr.attr('for');
+                                var newAttrId = currentAttrId.replace(/(0)/, newId)
+                                // console.log(newAttrId)
+                                currentAttr.attr('for', newAttrId);
+                            })
+                            newLeg.find("[name='confirm-leg-1']").attr("name", "confirm-leg-" + newLegNum);
+                            newLeg.find("input").not('input[type="radio"]').val('');
+                            newLeg.find(".confirm-leg-option.no").click();
+                            newLeg.find(".add-fuel-price .leg-num").attr("data-leg", newLegNum);
+                            newLeg.find(".remove-fuel-price .leg-num").attr("data-leg", newLegNum);
+
+
+                            let aircraft = $("#AircraftId").find(':selected');
+                            var takeoff = $(aircraft).data("maxtakeoff");
+                            var maxlanding = $(aircraft).data("maxlanding");
+                            var reserve = $(aircraft).data("reserve");
+                            var taxifuel = $(aircraft).data("taxifuel");
+                            var maxramp = $(aircraft).data("maxramp");
+                            var baggageNoPax = $(aircraft).data("baggage-wo-pax")
+                            var defaultcrew = $(aircraft).data("defaultcrew");
+
+                            newLeg.find("input[name$='MaxLandingWeight']").val(maxlanding);
+                            newLeg.find("input[name$='MaxTakeoffWeight']").val(takeoff);
+                            newLeg.find("input[name$='Reserve']").val(reserve);
+                            newLeg.find("input[name$='TaxiFuelBurn']").val(taxifuel);
+                            newLeg.find("input[name$='MaxRampWeight']").val(maxramp);
+                            newLeg.find("input[name$='LegNum']").val(newLegNum);
+                            newLeg.find("input[name$='Baggage']").val(baggageNoPax);
+                            newLeg.find("input[name$='CrewWeight']").val(defaultcrew);
+                            
+                            //fuel prices 
+                            var leg = response[i] 
+                            newLeg.find("input[name$='Departure']").val(leg.departure);
+                            newLeg.find("input[name$='Destination']").val(leg.destination);
+                            newLeg.find("input[name$='PassengerWeights']").val(leg.passengerWeights);
+                            newLeg.find("input[name$='WaivedFee.Amount']").val(leg.waivedFee.amount);
+                            newLeg.find("input[name$='WaivedFee.WaivedAt']").val(leg.waivedFee.waivedAt);
+                            
+                            newLeg.find(".dept-fuel-prices .col-6:not([data-idx='0'])").remove();
+                            newLeg.find("input[name$='DepartureFuelPrices[0].Price']").val(leg.departureFuelPrices[0].price);
+                            newLeg.find("input[name$='DepartureFuelPrices[0].MinFuel']").val(leg.departureFuelPrices[0].minFuel);
+                                for(var f = 1; f < leg.departureFuelPrices.length; f++){
+                                    var priceInfo = leg.departureFuelPrices[f]
+                                    var nextIdx = f;
+                                    var fuelPriceRow = `<div class="col-6" data-idx="${nextIdx}">
+                                                <label class="" for="Legs_${leg}__DepartureFuelPrices_X__Price">Price</label>
+                                                <div class="amount-input"><span class="dollar-sign">$</span><input class="" type="number" required="" data-val="true" data-val-number="The field Price must be a number." data-val-required="The Price field is required." id="Legs_${leg}__DepartureFuelPrices_${nextIdx}__Price" name="Legs[${leg}].DepartureFuelPrices[${nextIdx}].Price" value="${priceInfo.price}"/></div></div>
+                                                </div>
+                                                <div class="col-6" data-idx="${nextIdx}">
+                                                <label class="" for="Legs_${leg}__DepartureFuelPrices_${nextIdx}__MinFuel">Min Fuel (gal)</label>
+                                                <input class="valid" type="number" required="" data-val="true" data-val-number="The field MinFuel must be a number." data-val-required="The MinFuel field is required." id="Legs_${leg}__DepartureFuelPrices_${nextIdx}__MinFuel" name="Legs[${leg}].DepartureFuelPrices[${nextIdx}].MinFuel"  value="${priceInfo.minFuel}"/>
+                                                </div>`
+
+                                    newLeg.find(".card-btn.add-fuel-price").parent().before(fuelPriceRow);
+                                    newLeg.find(".card-btn.add-fuel-price").attr("data-idx", nextIdx);
+                                    newLeg.find(".remove-fuel-price").attr("data-idx", nextIdx);
+                            }
+                            legs.push(newLeg)
+
+
+                            //<input type="radio" name="confirm-leg-(i + 1)" value="true" hidden/>
+                            var newBurn = cloneBurn.clone(true);
+                            newBurn.find("span.leg-num").text(newLegNum);
+                            newBurnId = newBurn.find("input").attr('id');
+                            newBurnName = newBurn.find("input").attr("name");
+                            newBurn.find("input").attr("id", newBurnId.replace(/(0)/, newId)).attr("name", newBurnName.replace(/(0)/, newId));
+                            newBurn.attr("data-leg", newLegNum);
+                            fuelBurns.push(newBurn)
+
+                            currentLeg++; 
+                            newLegNum++; 
+                            newId++;
+                        }
+                        if(legs.length == fuelBurns.length){
+                            $(".trip-details .leg").each(function(){
+                                var legNum = parseInt($(this).attr("data-leg"))
+                                if(legNum > origLeg){
+                                    legNum = legNum + response.length;
+
+                                    $(this).attr("data-leg", legNum);
+                                    $(this).find(".leg-title .leg-num").text(legNum);
+                                    $(this).find(".confirm-text .leg-num").text(legNum);
+                                    $(this).find("[name^='confirm-leg-']").attr("name", "confirm-leg-" + legNum);
+                                    $(this).find("input[name$='LegNum']").val(legNum);
+                                    $(this).hide();
+
+                                }
+                            })
+                            $(".trip-fuel-details .fuel-burn-row").each(function(){
+                                var legNum = parseInt($(this).attr("data-leg"))
+                                if(legNum > origLeg){
+                                    legNum = legNum + response.length;
+
+                                    $(this).attr("data-leg", legNum);
+                                    $(this).find("span.leg-num").text(legNum);
+
+                                }
+                            })
+                            for(var i = legs.length-1; i>=0; i--){
+                                var newLeg = legs[i]
+                                var newBurn = fuelBurns[i]
+
+                                $(".trip-details .leg[data-leg='" + origLeg + "']").after(newLeg);
+                                $(".trip-fuel-details .fuel-burn-row[data-leg='" + origLeg + "']").after(newBurn).show();
+
+                                numLegs++;
+                            }
+
+                            $(".confirm-text .total-legs").text(numLegs);
+                            if(numLegs == 1){
+                                $(".remove-leg").attr("disabled", "disabled")
+                                $(".confirm-leg-option.no").attr("disabled", "disabled").addClass("disabled")
+                            }
+                            else {
+                                $(".remove-leg").removeAttr("disabled")
+                                $(".confirm-leg-option.no").removeAttr("disabled").removeClass("disabled")
+                            }
+                        }
+
+                        $('[data-toggle="tooltip"]').tooltip();
+                    }
+                }, 
+                error: function(){
+                    $(this).find(".error").show(); 
+                }
+            })
+            $("#add-leg-modal form")[0].reset();
+        })
+        $("#confirm-remove-leg").on("click", function(){
+            var leg = $("#remove-leg-modal").data("leg-to-remove")
+            $(".leg[data-leg='" + leg + "'] button.remove-leg").click();
+            $("#remove-leg-modal").modal("hide");           
+        })
+        $("body").on("click", ".remove-leg", function(){
+            var removedLegNum = parseInt($(this).closest(".leg").attr("data-leg"))
+            var nextLeg = $(this).closest(".trip-details").find(".leg[data-leg='" + (removedLegNum + 1) + "']")
+            
+            if(nextLeg && !$(nextLeg).is(":visible")){
+                $(this).closest(".confirm-leg-div").find(".confirm-leg-option.yes").click();
+            }
+
+            $(".trip-details .leg").each(function(){
+                var legNum = parseInt($(this).attr("data-leg"))
+                if(legNum > removedLegNum){
+                    legNum--
+
+                    $(this).attr("data-leg", legNum);
+                    $(this).find(".leg-title .leg-num").text(legNum);
+                    $(this).find(".confirm-text .leg-num").text(legNum);
+                    $(this).find("[name^='confirm-leg-']").attr("name", "confirm-leg-" + legNum);
+                    $(this).find("input[name$='LegNum']").val(legNum);
+
+                }
+            })
+            $(this).closest(".leg").find('[name$="LegNum"]').val(-1);
+            $(this).closest(".leg").attr("data-leg", "-1").slideUp("slow", function(){
+
+                var numValidatedLegs = $("input[name^='confirm-leg'][value='true']:checked").length;
+
+                if (numValidatedLegs >= numLegs) {
+                    let valid = $("form.plan-trip-form").valid();
+                    if(valid)
+                    {
+                        // $(".trip-details").hide();
+                        // $(".header-plan-trip").hide();
+                        // $(".trip-fuel-details").show();
+                        $(".next-btn").attr("disabled", false);
+                    }
+                    else {
+                        $(".next-btn").attr("disabled", true);
+                    }
+                }
+                else {
+                    $(".next-btn").attr("disabled", true);
+                }
+            });
+
+            $(".trip-fuel-details .fuel-burn-row[data-leg='" + removedLegNum + "']").attr("data-leg", "-1").slideUp("slow");
+
+            $(".trip-fuel-details .fuel-burn-row").each(function(){
+                var legNum = parseInt($(this).attr("data-leg"))
+                if(legNum > removedLegNum){
+                    legNum--
+
+                    $(this).attr("data-leg", legNum);
+                    $(this).find("span.leg-num").text(legNum);
+                    var details = $(".trip-details .leg[data-leg=" + legNum + "]"); 
+                    $(this).find(".destination").text($(details).find("input[name$='Destination']").val());
+                    $(this).find(".departure").text($(details).find("input[name$='Departure']").val());
+                }
+            })
+
+
+            numLegs--;
+            if(numLegs == 1){
+                $(".remove-leg").attr("disabled", "disabled")
+                $(".confirm-leg-option.no").attr("disabled", "disabled").addClass("disabled")
+            }
+            else {
+                $(".remove-leg").removeAttr("disabled")
+                $(".confirm-leg-option.no").removeAttr("disabled").removeClass("disabled")
+            }
+            $(".confirm-text .total-legs").text(numLegs);
+        })
+
+       $("body").on("change", "input[name$='Destination']", function(){
+           var leg = $(this).closest(".leg").data("leg");
+           $(".trip-fuel-details .fuel-burn-row[data-leg=" + leg + "] .destination").text($(this).val());
+       })
+       $("body").on("change", "input[name$='Departure']", function(){
+           var leg = $(this).closest(".leg").data("leg");
+           $(".trip-fuel-details .fuel-burn-row[data-leg=" + leg + "] .departure").text($(this).val());
+
+       })
+
+
+        $("body").on("click", ".card-btn.add-fuel-price",function() {
+            var btnrow = $(this).closest(".col");
+            var leg = parseInt($(this).attr("data-leg"));
+            var nextIdx = parseInt($(this).attr("data-idx")) + 1;
+            var fuelPriceRow = `<div class="col-6" data-idx="${nextIdx}">
+                        <label class="" for="Legs_${leg}__DepartureFuelPrices_X__Price">Price</label>
+                        <div class="amount-input"><span class="dollar-sign">$</span><input class="" type="number" required="" data-val="true" data-val-number="The field Price must be a number." data-val-required="The Price field is required." id="Legs_${leg}__DepartureFuelPrices_${nextIdx}__Price" name="Legs[${leg}].DepartureFuelPrices[${nextIdx}].Price"/></div></div>                            
+                        </div>
+                        <div class="col-6" data-idx="${nextIdx}">
+                        <label class="" for="Legs_${leg}__DepartureFuelPrices_${nextIdx}__MinFuel">Min Fuel (gal)</label>
+                        <input class="valid" type="number" required="" data-val="true" data-val-number="The field MinFuel must be a number." data-val-required="The MinFuel field is required." id="Legs_${leg}__DepartureFuelPrices_${nextIdx}__MinFuel" name="Legs[${leg}].DepartureFuelPrices[${nextIdx}].MinFuel"/>
+                        </div>`
+
+            $(btnrow).before(fuelPriceRow);
+            $(this).attr("data-idx", nextIdx);
+            $(btnrow).find(".remove-fuel-price").attr("data-idx", nextIdx);
+        })
+        $("body").on("click", ".card-btn.remove-fuel-price",function() {
+            var btnrow = $(this).closest(".col");
+            var idx = parseInt($(this).attr("data-idx"));
+            var lastIdx = idx - 1;
+            $(this).closest(".row").find("div.col-6[data-idx='" + idx + "']").remove(); 
+            $(this).attr("data-idx", lastIdx)
+            $(btnrow).find(".add-fuel-price").attr("data-idx", lastIdx);
+        })
+        $("body").on("change", "input[name$='CrewWeight'], input[name$='PassengerWeights']", function() {
+            $(this).val($(this).val().replace(/[^0-9.,]+/g, ''))
+        })
+    })
+</script>
+}

@@ -1,0 +1,51 @@
+﻿
+input.form-control {
+    margin-bottom: 1em;
+    border: solid 1px #7eb1d5;
+}
+input.form-control::placeholder {
+    color: #7eb1d5;
+}
+a {
+    color: #7eb1d5;
+    font-weight:600;
+    text-decoration:none;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+    font-weight: bold;
+}
+p {
+    font-size: .8rem;
+    width: fit-content;
+    margin-bottom: .3rem;
+}
+.auth-links, .account-support p {
+    margin-left: auto;
+    margin-right: auto;
+    width: fit-content;
+}
+.account-support {
+    position: fixed;
+    bottom: 0;
+    margin-bottom: 2rem;
+    width: 100%;
+}
+.account-support .title {
+    color:  #012053; 
+    font-weight: bold;
+}
+
+#registerSubmit, #login-submit{
+    background: #7eb1d5;
+    color:#fff;
+    margin-bottom:1em;
+    border-color: #7eb1d5;
+}
+
+#registerSubmit:hover, #login-submit:hover{
+    background: #012053;
+}

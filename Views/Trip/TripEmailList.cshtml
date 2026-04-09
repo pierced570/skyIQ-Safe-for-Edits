@@ -1,0 +1,98 @@
+﻿@model EmailListDTO
+@{
+    ViewData["Title"] = "Trip Summary";
+}
+
+<div class="container">
+    <h1 class="display-4">Trip @(Model.ItineraryNum ?? Model.TripSummaryId.ToString()) Summary</h1>
+    <p class="">Quick Ref Fuel Plan for flight on @Model.AircraftNum</p>
+    <div class="trip-summary">        
+        <form class="email-list-form" asp-action="TripSummary" method="post" enctype="multipart/form-data" onkeydown="if(event.keyCode === 13) {return false;}">
+            <input type="hidden" asp-for="TripSummaryId" />
+            <input type="hidden" asp-for="AircraftNum" />
+            <input type="hidden" asp-for="ItineraryNum" />
+
+            <div class="email-list text-center">
+                <div class="row title-row fw-bold">
+                    <div class="col col-3">Send Plan</div>
+                    <div class="col">Email Address</div>
+                </div>
+            
+                @for (int i = 0; i < Model.Emails.Count(); i++)
+                {
+                    <div class="row body-row">
+                        <div class="col col-3 d-flex align-items-center justify-content-center"><input type="checkbox" class="form-check-input" asp-for="Emails[i].IsChecked"/></div>
+                        <div class="col"><input type="email" asp-for="Emails[i].Email" /></div>
+                    </div> 
+                }
+                <div class="row body-row">
+                    <div class="col col-3 d-flex align-items-center justify-content-center"><input type="checkbox" class="form-check-input" checked="checked" id="Emails_@(Model.Emails.Count())__IsChecked" name="Emails[@(Model.Emails.Count())].IsChecked" value="true" /></div>
+                    <div class="col"><input type="email" id="Emails_@(Model.Emails.Count())__Email" name="Emails[@(Model.Emails.Count())].Email" /></div>
+                </div>
+            </div>
+
+            <button class="card-btn flex" type="submit">
+                <div class="title">Send Email</div>
+                <div class="description">Send trip summary to all emails that are checked</div>
+            </button>
+            <button class="card-btn flex mx-2 add-email" type="button">
+                <div class="title">Add Email</div>
+                <div class="description">Add email to list</div>
+            </button>
+            <button class="card-btn flex remove-email" type="button">
+                <div class="title">Remove Email</div>
+                <div class="description">Remove last email line from list</div>
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script type="text/javascript">
+    $(document).ready(function() {
+        var tempRow = `<div class="row body-row">
+                        <div class="col col-3 d-flex align-items-center justify-content-center"><input type="checkbox" class="form-check-input" checked="checked" id="Emails_X__IsChecked" name="Emails[X].IsChecked" value="true"/></div>
+                        <div class="col"><input type="email" id="Emails_X__Email" name="Emails[X].Email"/></div>
+                    </div>`
+        function addEmailRow(){
+            var newRow = $(tempRow);
+            var newId = $(".row.body-row:not(.temp)").length;
+            newRow.find("[id]").each(function(){
+                var currentAttr = $(this);
+                var currentAttrId = currentAttr.attr('id');
+                var newAttrId = currentAttrId.replace(/(X)/, newId)
+                currentAttr.attr('id', newAttrId);
+            })
+            newRow.find("[name]").each(function(){
+                var currentAttr = $(this);
+                var currentAttrId = currentAttr.attr('name');
+                var newAttrId = currentAttrId.replace(/(X)/, newId)
+                currentAttr.attr('name', newAttrId);
+                console.log(newId)
+            })
+
+            $(".email-list").append(newRow);
+
+        }
+        $(".email-list").on("keyup", ".body-row:last-child", function(e){
+            var keycode = (e.keyCode ? e.keyCode : e.which);
+            if (keycode != '13'){
+                return;
+            }
+            
+            addEmailRow();
+        })
+        $(".add-email").on("click", function(e){
+            addEmailRow();
+        })       
+        $(".remove-email").on("click", function(e){
+            $(".email-list .body-row:last-child").remove();
+        })
+        $("form.email-list-form").validate({
+            submitHandler: () => {
+                form.submit;
+            }
+        })
+    })
+</script>
+}

@@ -1,0 +1,32 @@
+﻿@model List<Aircraft>
+@{
+    ViewData["Title"] = "Manage Fleet";
+}
+
+<div class="container manage-fleet">   
+    <div class="fleet">
+        <div class="fleet-title"> Select an Aircraft</div>
+        <div class="row">
+            @foreach (Aircraft aircraft in Model)
+            {
+                <div class="col col-4 col-md-3 aircraft"><a class="d-flex flex-column align-items-center" asp-controller="Fleet" asp-action="EditPlane" asp-route-id="@aircraft.Id"><img src="~/img/airplane.svg" class="icon-plane">@aircraft.TailNumber</a></div>
+            }
+            @* <div class="col col-3 aircraft"><a asp-controller="Fleet" asp-action="EditPlane" asp-route-tail="N123AB">N123AB</a></div>
+            <div class="col col-3 aircraft"><a asp-controller="Fleet" asp-action="EditPlane" asp-route-tail="N321AB">N321AB</a></div>
+            <div class="col col-3 aircraft"><a asp-controller="Fleet" asp-action="EditPlane" asp-route-tail="N000CB">N000CB</a></div>
+            <div class="col col-3 aircraft"><a asp-controller="Fleet" asp-action="EditPlane" asp-route-tail="N836CB">N836CB</a></div>
+            <div class="col col-3 aircraft"><a asp-controller="Fleet" asp-action="EditPlane" asp-route-tail="N124AB">N124AB</a></div>
+            <div class="col col-3 aircraft"><a asp-controller="Fleet" asp-action="EditPlane" asp-route-tail="N421BA">N421BA</a></div> *@
+            <div class="col col-4 col-md-3 aircraft"><a class="d-flex flex-column align-items-center" asp-controller="Fleet" asp-action="AddPlane"><span class="icon-plus">+</span>Add Aircraft</a></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+
+        })
+    </script>
+}

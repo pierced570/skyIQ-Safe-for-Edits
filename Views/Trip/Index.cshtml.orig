@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "Plan a Trip";
+}
+
+<div class="container">
+    <h1 class="display-4 mb-4">Plan a Trip</h1>
+    
+        <form class="plan-trip-form" asp-action="PlanTrip" method="post" enctype="multipart/form-data">
+            <div>
+               <label for="formFile" class="dropzone" id="dropzone">
+        <p>Upload your itinerary</p>
+        <button type="button" class="btn btn-outline-secondary">Choose File</button>
+        <p id="file-name">No file chosen</p>
+    </label>
+    <input class="file-input" type="file" name="formFile" id="formFile" required accept=".pdf">
+
+
+
+
+            </div>
+<<<<<<< HEAD
+        <button class="btn card-btn flex mt-2" type="submit"><span class="title">Upload</span></button>
+=======
+            <button class="btn btn-secondary mt-2 mb-4" type="submit">Upload</button>
+>>>>>>> 8a6d725de5f6561902bc069be8a24c9274a5614e
+        </form>
+    <a class="card-btn" asp-area="" asp-controller="Trip" asp-action="PlanTrip">
+        <div class="title">No Itinerary</div>
+        <div class="description">Plan a trip without an exisiting itinerary</div>
+    </a>
+</div>
+
+@section Scripts {
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("form.plan-trip-form").validate({
+            submitHandler: () => {
+                form.submit;
+            }
+        })
+    })
+</script>
+}

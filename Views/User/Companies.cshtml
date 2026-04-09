@@ -1,0 +1,107 @@
+﻿@model CompanyList
+
+@{
+    ViewData["Title"] = "Compaines List";
+}
+
+<h2>Platform Overview</h2>
+<div class="platform-overview d-flex justify-content-between">
+    <div class="section">
+        <div class="h1">@NumberFormatter.FormatNumber(Model.NumCompanies)</div>
+        <p class="title">Companies</p>    
+    </div>
+    <div class="section">
+        <div class="h1">@NumberFormatter.FormatNumber(Model.TripsRun)</div>
+        <p class="title">Trips Run</p>
+    </div>
+    <div class="section">
+        <div class="h1">@NumberFormatter.FormatNumber(Model.TailNumbers)</div>
+        <p class="title">Tails</p>
+    </div>
+</div>
+<div class="d-flex justify-content-between">
+    <h3>User Base</h3>
+    <select id="days" class="days-select">
+        <option value="-1" selected>All Time</option>
+        <option value="30">30</option>
+        <option value="60">60</option>
+        <option value="90">90</option>
+    </select>
+</div>
+<div class="company-search">
+    <input id="search" type="text" placeholder="Search Company or Tail Number" />
+</div>
+<table id="companies" class="table table-striped">
+    <thead>
+        <tr>
+            <th>Company</th>
+            <th>Name</th>
+            <th># of Trips</th>
+            <th># Tail Numbers</th>
+            <th>Savings Accrued</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var table = $("#companies").DataTable({
+                serverSide: true,
+                dom: 'lrt',
+                paging: false, 
+                info: false,
+                ajax: {
+                    url: '/User/GetCompanies',
+                    type: 'POST',
+                    data: function(d) {
+                        d.days = $("#days").val();
+                    },
+                    "dataSrc": function (json) {
+                        var return_data = new Array();
+
+                        for (var i = 0; i < json.length; i++) {
+                            var companyInfo = json[i];
+                            var companyName =`<a href="/User/ViewCompany/${companyInfo.id}">${companyInfo.company}</a>`;
+
+                            return_data.push({
+                                'companyName': companyName,
+                                'name': companyInfo.name,
+                                'numTrips': companyInfo.numTrips,
+                                'numTails': companyInfo.numTails,
+                                'savings': '$' + companyInfo.savingsAccrued
+                            });
+
+                        }
+                        return return_data;
+                    }
+                },
+                columns: [
+                    { data: 'companyName', "searchable": true },
+                    { data: 'name', "searchable": true },
+                    { data: 'numTrips', "searchable": false },
+                    { data: 'numTails', "searchable": false },
+                    { data: 'savings', "searchable": false, "orderable": false }
+                ]
+            }); 
+
+            $("#search").on("change keyup", function(){
+                table.search($(this).val()).draw();
+            })
+            $("#days").on("change", function(){
+                table.ajax.reload(); 
+            })
+
+        })
+    </script>
+}
+
+

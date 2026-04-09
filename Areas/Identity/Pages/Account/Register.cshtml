@@ -1,0 +1,111 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+    <h1>Create account</h1>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-floating">
+        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
+        <label asp-for="Input.Email"></label>
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    </div>
+    <div class="form-floating">
+        <input asp-for="Input.FirstName" class="form-control" autocomplete="username" aria-required="true" />
+        <label asp-for="Input.FirstName"></label>
+        <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+    </div>
+    <div class="form-floating">
+        <input asp-for="Input.LastName" class="form-control" autocomplete="username" aria-required="true" />
+        <label asp-for="Input.LastName"></label>
+        <span asp-validation-for="Input.LastName" class="text-danger"></span>
+    </div>
+    <div class="form-floating">
+        <input asp-for="Input.Company" class="form-control" autocomplete="username" aria-required="true" />
+        <label asp-for="Input.Company"></label>
+        <span asp-validation-for="Input.Company" class="text-danger"></span>
+    </div>
+    <div class="form-floating">
+        <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" />
+        <label asp-for="Input.Password"></label>
+        <span asp-validation-for="Input.Password" class="text-danger"></span>
+    </div>
+    <div class="form-floating">
+        <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
+        <label asp-for="Input.ConfirmPassword"></label>
+        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mt-3">
+        <label for="termsText">Terms & Conditions</label>
+        <textarea id="termsText" class="form-control" rows="6" readonly>
+By registering for this application, you agree to abide by our Terms and Conditions. These may include rules around fair usage, data protection, and restrictions on misuse of services. Please review them carefully before proceeding.
+    </textarea>
+    </div>
+
+    <div class="form-check mt-2 mb-3">
+        <input class="form-check-input" type="checkbox" value="" id="acceptTerms" />
+        <label class="form-check-label" for="acceptTerms">
+            I accept the Terms & Conditions
+        </label>
+    </div>
+
+    <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary" disabled>Register</button>
+
+
+</form>
+    @* <div class="col-md-6 col-md-offset-2">
+        <section>
+            <h3>Use another service to register.</h3>
+            <hr />
+            @{
+                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                {
+                    <div>
+                        <p>
+                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
+                            about setting up this ASP.NET application to support logging in via external services</a>.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                        <div>
+                            <p>
+                                @foreach (var provider in Model.ExternalLogins!)
+                                {
+                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                }
+                            </p>
+                        </div>
+                    </form>
+                }
+            }
+        </section> *@
+
+@section LoginActions {
+    <partial name="_AccountSupport" />
+}
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const checkbox = document.getElementById("acceptTerms");
+            const submitBtn = document.getElementById("registerSubmit");
+
+            checkbox.addEventListener("change", function () {
+                submitBtn.disabled = !this.checked;
+            });
+        });
+    </script>
+
+}
+
+
+
+<link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />

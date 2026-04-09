@@ -1,0 +1,241 @@
+﻿@model AircraftDTO
+@{
+    ViewData["Title"] = "Edit Aircraft";
+    //Dictionary<string, List<string>> aircrafts = (Dictionary<string, List<string>>)ViewData["Aircrafts"];
+}
+
+<div class="container">
+    <h1 class="display-4">Edit Aircraft</h1>
+    <form class="fleet-form" asp-controller="Fleet" asp-action="EditPlane" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Aircraft.Id" />
+
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label asp-for="Aircraft.TailNumber">Tail Number <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="You know this one"></i></label>
+            </div>
+            <div class="col">
+            <input type="text" asp-for="Aircraft.TailNumber" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label asp-for="Aircraft.BasicEmptyWeight">Basic Empty Weight (lbs.) <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="This is how much the plane weighs with no people and no fuel — just the plane itself. "></i></label>
+            </div>
+            <div class="col">
+            <input type="number" asp-for="Aircraft.BasicEmptyWeight" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label asp-for="Aircraft.MaxTakeoffWeight">Max Takeoff Weight (lbs.) <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="This is the heaviest the plane is allowed to be when it takes off. Look it up in the AFM."></i></label>
+            </div>
+            <div class="col">
+            <input type="number" asp-for="Aircraft.MaxTakeoffWeight" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label asp-for="Aircraft.MaxLandingWeight">Max Landing Weight (lbs.) <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="This is the heaviest the plane can be when it lands safely. Look it up in the AFM."></i></label>
+            </div>
+            <div class="col">
+            <input type="number" asp-for="Aircraft.MaxLandingWeight" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label class="" asp-for="Aircraft.MaxRampWeight">Max Ramp Weight (lbs.) <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="This is the max weight before the plane starts moving. It includes fuel for taxiing. It’s usually a little more than takeoff weight."></i></label>
+            </div>
+            <div class="col">
+                <input class="" type="number" asp-for="Aircraft.MaxRampWeight" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label asp-for="Aircraft.PreferredReserve">Preferred Reserve (lbs.) <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="Type how much fuel you always want to have left when you land. (Usually about 1 hour’s worth of fuel.)"></i></label>
+            </div>
+            <div class="col">
+            <input type="number" asp-for="Aircraft.PreferredReserve" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label asp-for="Aircraft.MaxFuelCapacity">Max Fuel Capacity (lbs.) <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="Type the total amount of fuel the plane can carry, in pounds (not gallons!). This info is in the AFM."></i></label>
+            </div>
+            <div class="col">
+            <input type="number" asp-for="Aircraft.MaxFuelCapacity" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label class="" asp-for="Aircraft.TaxiFuelBurn">Taxi Fuel Burn (lbs.) <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="This is an estimate on how much fuel you burn on taxi before takeoff. (Do not worry you can change this number for each trip if needed) "></i></label>
+            </div>
+            <div class="col">
+                <input class="" type="number" asp-for="Aircraft.TaxiFuelBurn" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label class="" asp-for="Aircraft.DefaultPaxWeight">Default PAX Weight <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="Type the average weight you use for a passenger. 177lbs is the average! (Do not worry you can change this number for each trip if needed) "></i></label>
+            </div>
+            <div class="col">
+                <input class="" type="number" asp-for="Aircraft.DefaultPaxWeight" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label class="" asp-for="Aircraft.DefaultBaggageWithPax">Baggage Weight with PAX <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="This is the estimated baggage weight typically associated with passenger flights. 250lbs is the average! (Do not worry you can change this number for each trip if needed) "></i></label>
+            </div>
+            <div class="col">
+                <input class="" type="number" asp-for="Aircraft.DefaultBaggageWithPax" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label class="" asp-for="Aircraft.DefaultBaggageNoPax">Baggage Weight without PAX <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="This is the estimated baggage weight for an empty leg with crew only baggage. We use 50lbs! (Do not worry you can change this number for each trip if needed) "></i></label>
+            </div>
+            <div class="col">
+                <input class="" type="number" asp-for="Aircraft.DefaultBaggageNoPax" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label class="" asp-for="Aircraft.DefaultPICWeight">Default PIC Weight <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="Type an estimate for how much the pilot-in-command usually weighs. (Do not worry you can change this number for each trip if needed) "></i></label>
+            </div>
+            <div class="col">
+                <input class="" type="number" asp-for="Aircraft.DefaultPICWeight" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label class="" asp-for="Aircraft.DefaultSICWeight">Default SIC Weight <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="Type an estimate for how much the second-in-command usually weighs. (Do not worry you can change this number for each trip if needed) "></i></label>
+            </div>
+            <div class="col">
+                <input class="" type="number" asp-for="Aircraft.DefaultSICWeight" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label class="" asp-for="Aircraft.DefaultCabinWeight">Cabin Attendant Weight <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="This is the average weight of a cabin attendant if applicable. If no attendants are aboard your aircraft please leave blank"></i></label>
+            </div>
+            <div class="col">
+                <input class="" type="number" asp-for="Aircraft.DefaultCabinWeight" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label asp-for="Aircraft.Manufacturer">Manufacturer <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="Who made the plane? Type the company name like Cessna, Embraer, or Learjet."></i></label>
+            </div>
+            <div class="col">
+            <input class="col" type="text" asp-for="Aircraft.Manufacturer" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label asp-for="Aircraft.Type">Model <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="Type the exact model of the plane, like CJ3, Phenom 300, or Lear 45."></i></label>
+            </div>
+            <div class="col">
+            <input class="col" type="text" asp-for="Aircraft.Type" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label asp-for="Aircraft.CarryTypeId">Type <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="This is the category of plane. (Select from our drop down)"></i></label>
+            </div>
+            <div class="col">
+                @* <input class="col" type="text" asp-for="Aircraft.CarryTypeId" /> *@
+                <select class="form-select col" asp-for="Aircraft.CarryTypeId">
+                    <option value="default" selected disabled>Select a Type</option>
+                    @foreach (var type in Model.CarryTypes)
+                    {
+                        <option value="@type.Id" data-burn="@type.CruiseFuelBurn" data-rate="@type.PenaltyRate">@type.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label asp-for="Aircraft.CruiseFuelBurn">Cruise Fuel Burn <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="How much fuel the plane uses per hour during cruise (in pounds). Don't worry we will autofill this for you."></i></label>
+            </div>
+            <div class="col">
+                <input class="col" type="number" asp-for="Aircraft.CruiseFuelBurn" required min="1"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-5 col-md-5">
+                <label asp-for="Aircraft.PenaltyRate">Penalty Rate <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" title="Type the cost in dollars per pound for being over weight or under-fueled. Don't worry we autofill this for you"></i></label>
+            </div>
+            <div class="col">
+                <input class="col" type="number" asp-for="Aircraft.PenaltyRate" step="0.00001" required min="0.00001" />
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <a class="card-btn flex" asp-controller="Fleet" asp-action="Index">
+                <div class="title">Back</div>
+                <div class="description">View all aircrafts.</div>
+            </a>
+            <div>
+                <button class="card-btn flex">
+                    <div class="title">Save Aircraft</div>
+                    <div class="description">Ensure this data is accurate.</div>
+                </button>
+                <button class="card-btn card-btn-red flex" type="button" id="delete">
+                    <div class="title">Delete Aircraft</div>
+                    <div class="description">Remove aircraft from system.</div>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+<script type="text/javascript">
+    $(document).ready(function () {
+        //on manufacturer change, change aircraft type
+        if($("select[name$='Manufacturer']").val() == 'default'){
+            $("select[name$='Type'] option[data-manufacturer!='default']").hide();
+        }
+        else {
+            var manu = $("select[name$='Manufacturer']").val();
+            $("select[name$='Type'] option[data-manufacturer='" + manu + "']").show();
+            $("select[name$='Type'] option[data-manufacturer!='" + manu + "']").hide();
+        }
+
+        $("select[name$='Manufacturer']").on("change", function(){
+            var manu = $(this).val();
+            $("select[name$='Type'] option[data-manufacturer='" + manu + "']").show();
+            $("select[name$='Type'] option[data-manufacturer!='" + manu + "']").hide();
+            // $("select[name='Type'] option[data-manufacturer='default']").show();
+
+            $("select[name$='Type'] option[data-manufacturer='default']").prop('selected', true);
+        })
+
+        $("select[name$='CarryTypeId']").on("change", function(){
+            var option = $(this).find("option[value='" + $(this).val() +"']")
+            $("input[name$='CruiseFuelBurn']").val($(option).data("burn"))
+            $("input[name$='PenaltyRate']").val($(option).data("rate"))
+        })
+
+        $("form.fleet-form").validate({
+            submitHandler: () => {
+                form.submit;
+            }
+        })
+        
+        $('[data-toggle="tooltip"]').tooltip()
+
+        $("#delete").on("click", function(){
+            $.ajax({
+                url:"/Fleet/Delete",
+                method: "POST", 
+                data: {
+                    id: "@Model.Aircraft.Id"
+                }, 
+                success: (response) => {
+                     window.location.href = response.redirecTotUrl;
+                }
+            })
+        })
+    })
+</script>
+}

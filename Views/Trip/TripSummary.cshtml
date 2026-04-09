@@ -1,0 +1,97 @@
+﻿@model TripSummary
+@{
+    ViewData["Title"] = "Trip Summary";
+    int summaryId = Model.Id;
+}
+
+<div class="container">
+    <h1 class="display-4">Trip @Model.ItineraryNum Summary</h1>
+    <div class="full-summary">
+        <p class="">Fuel Plan Summary for flight on @Model.AircraftNumber</p>
+        <div class="trip-summary">
+            @for (int i = 0; i < Model.Legs.Count(); i++)
+            {
+                TripSummaryLeg leg = Model.Legs[i];
+                <div class="leg">
+                    <div class="row title-row">
+                        <div class="col">Leg @(i+1):@leg.Departure --> @leg.Arrival</div>
+                    </div>
+                    <div class="row body-row">
+                        <div class="col col-6" style="font-weight: bold;">Fuel to Uplift (gal., lbs.)</div>
+                        <div class="col col-6" style="font-weight: bold;">@Math.Round(leg.FuelUpliftGals) gal., @Math.Round(leg.FuelUpliftLbs) lbs.</div>
+                        <div class="col col-6">Starting Fuel (lbs.)</div>
+                        <div class="col col-6">@Math.Round(leg.StartFuel) lbs.</div>
+                        <div class="col col-6">Fuel Burn</div>
+                        <div class="col col-6">@Math.Round(leg.FuelBurn) lbs.</div>
+                        <div class="col col-6">Landing Fuel (lbs.)</div>
+                        <div class="col col-6">@Math.Round(leg.LandingFuel) lbs.</div>
+                        <div class="col col-6">Takeoff Weight (lbs.)</div>
+                        <div class="col col-6">@Math.Round(leg.TakeoffWeight) lbs.</div>
+                        <div class="col col-6">Landing Weight (lbs.)</div>
+                        <div class="col col-6">@Math.Round(leg.LandingWeight) lbs.</div>
+                        <div class="col col-6">Fuel Cost ($)</div>
+                        <div class="col col-6">@string.Format("{0:C}", leg.FuelCost)</div>
+                        <div class="col col-6">Waived Fees (y/n)</div>
+                        <div class="col col-6">@(leg.HasWaivedFee ? (leg.FuelCost < leg.TotalCost ? "No; min required " + leg.FeeMin : "Yes; min required " + leg.FeeMin) : "No fees")</div>
+                        <div class="col col-6">Total Cost ($)</div>
+                        <div class="col col-6">@string.Format("{0:C}", leg.TotalCost)</div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="leg">Total Cost: <strong>@string.Format("{0:C}", Model.Legs.Select(l => l.TotalCost).Sum())</strong></div>
+        <button class="switch-summary card-btn flex">
+            <div class="title">Quick Ref Fuel Plan for flight on @Model.AircraftNumber</div>
+        </button>
+        <a class="resend-email card-btn flex" asp-action="TripEmailList" asp-route-id="@summaryId">
+            <div class="title">Send Email</div>
+        </a>
+
+        <form class="plan-trip-form" asp-action="PlanTrip" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="@summaryId" />
+            <button class="card-btn flex">
+                <div class="title">Edit Itinerary</div>
+                <div class="description">Return to plan trip form to fix any errors with the flight</div>
+            </button>
+        </form>
+
+    </div>
+    <div class="quick-ref-summary">
+        <p class="">Quick Ref Fuel Plan for flight on @Model.AircraftNumber</p>
+        <div class="trip-summary">
+            @for (int i = 0; i < Model.Legs.Count(); i++)
+            {
+                TripSummaryLeg leg = Model.Legs[i];
+                <div class="leg">
+                    <div class="row title-row">
+                        <div class="col">@leg.Departure --> @leg.Arrival</div>
+                    </div>
+                    <div class="row body-row">
+                        <div class="col col-6" style="font-weight: bold;">Uplift (gal., lbs.)</div>
+                        <div class="col col-6" style="font-weight: bold;">@Math.Round(leg.FuelUpliftGals) gal., @Math.Round(leg.FuelUpliftLbs) lbs.</div>
+                        <div class="col col-6">Starting Fuel (lbs.)</div>
+                        <div class="col col-6">@Math.Round(leg.StartFuel) lbs.</div>
+                        <div class="col col-6">Fuel Burn</div>
+                        <div class="col col-6">@Math.Round(leg.FuelBurn) lbs.</div>
+                        <div class="col col-6">Waived Fees (y/n)</div>
+                        <div class="col col-6">@(leg.HasWaivedFee ? (leg.FuelCost < leg.TotalCost ? "No; min required " + leg.FeeMin : "Yes; min required " + leg.FeeMin) : "No fees")</div>
+                    </div>
+                </div>
+            }
+        </div>
+        <button class="switch-summary card-btn flex">
+            <div class="title">Full Plan Summary for flight on @Model.AircraftNumber</div>
+        </button>       
+    </div>
+</div>
+
+@section Scripts {
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".switch-summary").on("click", function(){
+            $(".quick-ref-summary").toggle(); 
+            $(".full-summary").toggle();
+        })
+    })
+</script>
+}

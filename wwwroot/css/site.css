@@ -1,0 +1,801 @@
+:root {
+    --sky-blue: #7eb1d5;
+    --dark-blue: #012053;
+}
+
+html {
+    font-size: 12px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 14px;
+    }
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+footer {
+    z-index: -1;
+}
+
+body {
+    margin-bottom: 60px;
+    font-family: "Montserrat", serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.fw-semibold {
+    font-weight: 600;
+}
+
+.modal {
+    height: 100vh;
+    bottom: 0;
+    background-color: rgb(128, 128, 128, 0.7);
+}
+
+.modal-dialog {
+    opacity: 1;
+    height: 100vh;
+    max-width: 45%;
+    min-width: 157px;
+    align-content: center;
+    margin: 0 auto;
+}
+
+.modal-body {
+    padding: 3rem 1.5rem;
+}
+
+.skyiq-logo {
+    height: 200px;
+    width: auto;
+}
+
+form .trip-details, form .trip-fuel-details, form .trip-summary {
+    display: none;
+}
+
+form.fleet-form .row {
+    margin-bottom: 1em;
+    /*border-bottom:1px solid #000;*/
+}
+
+
+form input,
+form select,
+form .form-select {
+    background: #dfdfdf;
+    padding: 6px;
+    border-radius: 0;
+    border: 0;
+    color: #000;
+    width: 100%;
+}
+
+    form input:focus-visible {
+        outline-color: #7eb1d5;
+    }
+
+form label {
+    color: rgb(33, 37, 41);
+    font-weight: 500;
+}
+
+    form label.error,
+    .field-validation-error {
+        color: red;
+    }
+
+form select.error,
+form input.error {
+    border: 1px solid red;
+}
+
+.confirm-leg {
+    margin-bottom: 1.5em;
+}
+
+form #import-aircraft-error {
+    display: none;
+}
+
+
+.card-btn {
+    display: inline-block;
+    padding: .3em .8em;
+    margin: .3em 1em .3em 0em;
+    width: 150px;
+    border-radius: 10px;
+    border: 2px solid lightgray;
+    cursor: pointer;
+    text-align: left;
+}
+
+    .card-btn .title {
+        font-weight: bold;
+        font-size: .85rem;
+    }
+
+    .card-btn:hover,
+    .card-body:hover {
+        border-color: black;
+    }
+
+    .card-btn:disabled:hover {
+        border-color: lightgray;
+    }
+
+a.card-btn {
+    text-decoration: none;
+    color: black;
+    width: 195px;
+    text-overflow: ellipsis;
+    background-color: buttonface;
+}
+
+.card-btn .description {
+    font-size: .8rem;
+}
+
+.card-btn.gray {
+    background-color: lightgray;
+}
+
+.card-btn.flex {
+    width: auto;
+}
+
+.card-btn.card-btn-red {
+    border-color: #dc3545;
+    color: #dc3545;
+}
+
+    .card-btn.card-btn-red:hover {
+        border-color: darkred;
+        color: darkred;
+    }
+
+.card-body {
+    border-radius: 10px;
+    border: 2px solid lightgray;
+}
+
+.card .card-title {
+    font-weight: bold;
+}
+
+.confirm-leg-option {
+    background-color: lightgray;
+}
+
+    .confirm-leg-option.yes.active {
+        border: 2px solid lightgreen;
+    }
+
+    .confirm-leg-option.no.active {
+        border: 2px solid red;
+    }
+
+    .confirm-leg-option.no.disabled {
+        background-color: transparent;
+        color: #212529;
+        opacity: .65;
+    }
+
+        .confirm-leg-option.no.disabled:hover {
+            border: 2px solid lightgray;
+            cursor: default;
+        }
+
+.adjust-legs .card-btn {
+    display: block;
+}
+
+.amount-input {
+    display: flex;
+}
+
+    .amount-input .dollar-sign {
+        margin-right: .3rem;
+        font-size: 1.3rem;
+        align-self: center;
+    }
+
+.fleet {
+    /*  background-color: #f1f1f1;*/
+    padding: 0.38rem;
+    border-radius: 10px;
+}
+
+    .fleet .fleet-title {
+        font-weight: bold;
+        font-size: 2em;
+        margin-bottom: 1em;
+    }
+
+    .fleet .fleet-description {
+        font-size: .95rem;
+        font-style: italic;
+        margin-bottom: 2em;
+    }
+
+    .fleet .aircraft {
+        text-align: center;
+    }
+
+        .fleet .aircraft a {
+            color: black;
+        }
+
+            .fleet .aircraft a:hover {
+                color: #48688d;
+            }
+
+.trip-rough-summary hr {
+    margin: .5rem 0 .5rem 0;
+}
+
+.trip-summary .leg {
+    margin-bottom: 2rem;
+}
+
+    .trip-summary .leg .row,
+    .email-list .row {
+        border: solid 1px black;
+    }
+
+    .trip-summary .leg .title-row,
+    .email-list .title-row {
+        border-bottom: none;
+    }
+
+    .trip-summary .leg .body-row,
+    .email-list .body-row {
+        border-top: none;
+    }
+
+    .trip-summary .leg .col,
+    .email-list .col {
+        border: solid 1px black;
+    }
+
+.quick-ref-summary {
+    display: none;
+}
+
+.switch-summary:hover {
+    cursor: pointer;
+    color: gray;
+}
+
+.summary-pdf .full-summary .trip-summary {
+    width: 80%;
+    padding-left: 10px;
+}
+
+.prev-trips .prev-trip {
+    padding: .3rem;
+    border-radius: 5px;
+}
+
+    .prev-trips .prev-trip .title {
+        font-weight: bold;
+        font-size: .9rem;
+    }
+
+    .prev-trips .prev-trip .description {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        font-size: .85rem;
+    }
+
+    .prev-trips .prev-trip:hover {
+        background-color: lightgray;
+    }
+
+.prev-trips-title {
+    font-weight: 600;
+}
+
+@media (min-height: 1px) and (max-height: 439px) {
+    .prev-trips, .prev-trips-hr {
+        display: none;
+    }
+}
+
+@media (min-height: 440px) and (max-height: 550px) {
+    .prev-trips {
+        max-height: 80px;
+        overflow: auto;
+    }
+}
+
+@media (min-height: 551px) and (max-height: 650px) {
+    .prev-trips {
+        max-height: 190px;
+        overflow: auto;
+    }
+}
+
+@media (min-height: 651px) and (max-height: 725px) {
+    .prev-trips {
+        max-height: 300px;
+        overflow: auto;
+    }
+}
+
+@media (min-height: 726px) and (max-height: 740px) {
+    .prev-trips {
+        max-height: 370px;
+        overflow: auto;
+    }
+}
+
+
+.email-list input[type=checkbox] {
+    margin: 0;
+}
+
+.email-list input[type=email] {
+    width: 100%;
+    margin: .5rem;
+    border-radius: 20px;
+    border: 1px solid gray;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: center;
+}
+
+.trip-details .leg {
+    display: none;
+}
+
+@media (min-width: 560px) {
+    .trip-details .leg .confirm-leg-div {
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+.display-4 {
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
+.header-bumper {
+    width: 37px;
+}
+
+.company-name {
+    font-weight: 600;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.menu-container {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 280px;
+    height: 100%;
+    background-color: #fff;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+    transition: left 0.3s ease;
+    padding-top: 60px;
+    padding: 1em;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+}
+
+    .menu-container a {
+        display: block;
+        text-decoration: none;
+        color: #000;
+        transition: background 0.3s;
+    }
+
+        .menu-container a:hover {
+        }
+
+.menu-button {
+    top: 15px;
+    left: 15px;
+    font-size: 24px;
+    background: none;
+    border: none;
+    color: #000;
+    cursor: pointer;
+    margin-top: 1em;
+    z-index: 999;
+}
+
+.menu-container .menu-button {
+    margin: 0;
+    position: absolute;
+}
+
+.aircraft-select {
+    max-width: 150px;
+    margin-left: 1em;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 998;
+}
+
+.aircraft {
+    margin-bottom: 1em;
+}
+
+    .aircraft a {
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .aircraft img {
+        width: 100%;
+        max-width: 200px;
+        margin-bottom: 1em;
+    }
+
+.icon-plus {
+    font-weight: 800;
+    font-size: 9em;
+}
+
+.dropzone {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    border: 2px dashed lightgray;
+    border-radius: 8px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    color: #6c757d;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+    .dropzone:hover {
+        background-color: #e9f5ff;
+    }
+
+    .dropzone.active {
+        background-color: #d0ebff;
+        border-color: #0056b3;
+    }
+
+    .dropzone p {
+        margin: 10px 0;
+        font-size: 14px;
+    }
+
+.file-input {
+    display: none;
+}
+
+.choose-file-btn {
+    display: block;
+    margin: 0 auto;
+    padding: 8px 12px;
+    border: none;
+    background-color: #6c757d;
+    color: white;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+    .choose-file-btn:hover {
+        background-color: #0056b3;
+    }
+
+
+
+@media (max-width: 768px) {
+    .menu-button {
+        margin: 1em 0 0 0;
+    }
+}
+
+.menuspan-top {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    width: 25px;
+    height: 3px;
+}
+
+.menuspan-bottom {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    width: 18px;
+    height: 3px;
+    margin-top: 5px;
+}
+
+.nav-item i {
+    margin-right: 5px;
+}
+
+.search-box {
+    position: relative;
+}
+
+    .search-box input {
+        background: #eeeef0;
+        border: 1px solid #eeeef0;
+        border-radius: 6px;
+        font-size: 1em;
+        line-height: 2em;
+        width: 100%;
+        margin-bottom: 1em;
+        margin-top: 3em;
+        padding: 3px;
+        padding-left: 30px; /* Adjust padding for icon */
+    }
+
+    .search-box .fa-search {
+        position: absolute;
+        top: 65%;
+        left: 10px;
+        transform: translateY(-50%);
+        color: #888;
+    }
+
+
+/** UPGRADED PDF UPLOAD DROPBOX **/
+.upload-container {
+    position: relative;
+    min-width: 300px;
+    display: flex;
+    border: 1px solid #888;
+    border-radius: 8px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1em;
+    background: #fff;
+}
+
+.file-input {
+    display: none;
+}
+
+.upload-box {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    cursor: pointer;
+    min-width: 220px;
+    background: #f3f2f9;
+}
+
+    .upload-box:hover {
+        box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+
+#add-leg-modal .upload-box {
+    min-width: 0;
+    max-width: 80%;
+}
+
+#add-leg-modal .upload-container {
+    min-width: 0;
+}
+
+#add-leg-modal .card-btn.add-leg-blank {
+    max-width: 100%;
+}
+
+.btn-upload-submit {
+    color: #fff;
+    background: #000;
+    border-radius: 50%;
+}
+
+.upload-container .field-validation-error {
+    display: none;
+}
+
+.file-icon {
+    margin-right: 8px;
+    color: #FF4081;
+}
+
+.file-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.remove-btn {
+    background: #888;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px;
+}
+
+    .remove-btn:hover {
+        color: #555;
+    }
+
+.upload-button {
+    position: absolute;
+    right: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #0f0;
+    border-radius: 50%;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.drag-over {
+    border-color: #0f0;
+}
+
+
+/** BLUE THEME **/
+
+.bluetheme body {
+    background: #7eb1d5;
+    min-height: 100vh;
+    margin: 0;
+}
+
+
+.bluetheme a {
+    color: #012053;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+    .bluetheme a.card-btn {
+        background: #fff;
+    }
+
+
+#login-submit {
+    background: #302b70;
+    color: #fff;
+    margin-bottom: 1em;
+}
+
+    #login-submit:hover {
+        background: #012053;
+    }
+
+
+/** Super Admin Panel **/
+.platform-overview {
+    padding-left: 2rem;
+    padding-right: 3rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+    .platform-overview .h1 {
+        font-weight: bold;
+        font-size: 3rem;
+    }
+
+    .platform-overview .title {
+        font-size: 1.2rem;
+    }
+
+    .platform-overview .section {
+        text-align: center;
+    }
+
+.days-select {
+    border: none;
+}
+
+.company-search input {
+    padding: .8rem;
+    border-radius: 10px;
+    border-width: 1px;
+    width: 100%
+}
+
+table#companies tbody tr:hover {
+    cursor: pointer;
+    background-color: lightgray;
+}
+
+.savings-accrued .fleet-details .totals {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.savings-accrued .savings {
+    color: #03bf65;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+
+/* home/index */
+@media (min-width: 0px) and (max-width: 440px) {
+    .actions.home a.card-btn,
+    .actions.plan-trip-index a.card-btn {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .icon-plus {
+        font-size: 5rem;
+    }
+}
+
+@media (min-width: 441px) {
+    .actions.home,
+    .actions.plan-trip-index {
+        display: flex;
+        justify-content: center;
+    }
+
+        .actions.plan-trip-index a.card-btn {
+            height: 100%
+        }
+
+        .actions.plan-trip-index form.plan-trip-form {
+            width: 75%;
+            max-width: 450px;
+        }
+
+    .icon-plus {
+        font-size: 7rem;
+    }
+}
+
+
+
+@media (max-width: 680px) {
+
+    .plan-trip-form input, .plan-trip-form select, .plan-trip-form .form-select {
+        margin-bottom: 1em;
+    }
+
+    .adjust-legs .card-btn {
+        display: block;
+        width: 100%;
+        font-size: 1em;
+        padding: 1.5em;
+        margin-top: 1em;
+        text-align: center;
+    }
+
+    .add-fuel-price {
+        display: flex;
+        min-height: 40px;
+        margin-top: 1em;
+        align-items: center;
+    }
+}

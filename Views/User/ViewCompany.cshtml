@@ -1,0 +1,72 @@
+﻿@model CompanyDTO
+
+@{
+    ViewData["Title"] = "View Company";
+}
+
+<h2>@Model.Company</h2>
+<form asp-action="ToggleCompany" method="post" class="my-3">
+    <input type="hidden" id="id" name="id" value="@Model.Id" />
+    <div class="form-check form-switch">
+        <input type="checkbox" class="form-check-input" role="switch" id="isEnabled" name="isEnabled" checked="@Model.IsEnabled" />
+        <label class="form-check-label" for="isEnabled">User Enabled</label>
+    </div>
+
+    <button class="card-btn flex" type="submit">
+        <div class="title">Save</div>
+        <div class="description">Toggle enabled status</div>
+    </button>
+</form>
+
+<a class="card-btn flex" href="/User/Edit/@Model.Id"><div class="title">Edit User</div></a>
+
+<p>Tail Numbers</p>
+<div class="company-search">
+    <input id="search" type="text" placeholder="Search Tail Number or AC Type" />
+</div>
+<table>
+    <thead>
+        <tr>
+            <th>Tail Number</th>
+            <th>AC Types</th>
+            <th>Trips (30 Days)</th>
+            <th>Trips (All Time)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var tail in Model.Tails)
+        {
+            <tr>
+                <td>@tail.TailNumber</td>
+                <td>@tail.ManufacturerModel</td>
+                <td>@tail.TripsRun30</td>
+                <td>@tail.TripsRun</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var table = $("table").DataTable(
+            {
+                dom: 'lrt',
+                paging: false
+            });  
+
+            $("#search").on("keypress", function(){
+                table.search($(this).val()).draw();
+            })
+
+            $("#isEnabled").on("change", function(){
+                if($(this).is(":checked")){
+                    $(this).val(true);
+                }
+                else {
+                    $(this).val(false);
+                }
+            })
+        })
+    </script>
+}

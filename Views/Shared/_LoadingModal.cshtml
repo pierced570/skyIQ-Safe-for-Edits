@@ -1,0 +1,39 @@
+﻿
+<div class="modal" id="loadingModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="d-flex">
+                    <img class="loading-img" src="~/img/skyIQminiblue.svg" />
+                </div>
+                <p class="fact"></p>
+                <div class="d-flex justify-content-center align-items-center">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Parsing Itinerary...</span>
+                    </div>
+                    <p class="loading-text">Parsing Itinerary...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    img.loading-img {
+        max-width: 25%; 
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 2rem;
+    }    
+    p.fact {
+        text-align: center;
+    }
+    .loading-text {
+        font-weight: bold; 
+        margin: 0 0 0 .5rem;
+    }
+    .spinner-border {
+        color: #7eb1d5;
+    }
+</style>
+

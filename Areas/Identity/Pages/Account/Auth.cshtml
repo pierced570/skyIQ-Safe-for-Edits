@@ -1,0 +1,83 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "skyIQ | Log in";
+}
+
+<div class="logo">
+    <a href="/">
+        <img src="~/img/skyIQLogo.svg" />
+    </a>
+
+</div>
+
+@section LoginActions {
+    <div class="actions">
+        <a class="btn sign-up mb-3" asp-area="Identity" asp-page="/Account/Register">Sign up with email</a>
+        <a class="btn login" asp-area="Identity" asp-page="/Account/Login">Login</a>
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript">
+        $(document).ready(function(){
+           
+        })
+    </script>
+}
+<style>
+    img {
+        display: block;
+        max-width: 200px;
+        margin: 1em auto;
+    }
+
+    body {
+        background: #7eb1d5;
+    }
+
+    input {
+        margin-bottom: 1em;
+    }
+
+    a {
+        color: #012053;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    html, body, main, .container, .logo {
+        height: 100%
+    }
+
+
+    .logo {
+        align-content: center;
+    }
+
+    .actions {
+        color: white;
+        background-color: black;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        align-items: center;
+        padding: 2rem;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+
+    .actions .btn {
+        display: block;
+        color: #fefffc;
+        width: 100%;
+        border: .5px solid #2c2c2e;
+        border-radius: 8px;
+    }
+
+    .actions .btn.sign-up {
+        background-color: #2c2c2e;
+    }
+</style>

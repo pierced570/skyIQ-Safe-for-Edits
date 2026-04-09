@@ -1,0 +1,42 @@
+﻿@model List<TailDTO>
+@{
+    ViewData["Title"] = "Potential Savings Earned";
+}
+
+<div class="container savings-accrued">
+    <div class="fleet">
+        <div class="fleet-title">Potential Savings Earned</div>
+        <div class="fleet-description">We show half the difference between your optimized fuel plan and a typical worst-case—giving you a realistic view of your likely savings.</div>
+        <div class="fleet-details mb-4">
+            <div class="totals">Total Savings: @string.Format("{0:C}",Model.Select(t => t.Savings).Sum())</div>
+            <div class="totals">Fuel Plans Calculated: @Model.Select(t => t.TripsRun).Sum()</div>
+        </div>
+        <div class="row">
+            @foreach (TailDTO aircraft in Model)
+            {
+                <div class="col col-4 col-md-3 aircraft">
+                    <div class="d-flex flex-column align-items-center">
+                        <img src="~/img/airplane.svg" class="icon-plane">
+                        @aircraft.TailNumber
+                    </div>
+                    <p class="savings">$@NumberFormatter.FormatNumber(aircraft.Savings)</p>
+                    </div>
+            }            
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+
+        })
+    </script>
+}
+
+<style>
+    .fleet .fleet-title {
+        margin-bottom: 0;
+    }
+</style>

@@ -1,0 +1,128 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using SkyIQ.Models
+@using SkyIQ.Data
+@using Newtonsoft.Json;
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext _context
+
+@{
+
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SkyIQ</title>
+    <link rel="icon" type="image/svg" href="/img/skyIQmini.svg" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/SkyIQ.styles.css" asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.0/css/dataTables.dataTables.css" />
+
+</head>
+<body>
+    <header>
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light">
+                <div class="container-fluid">
+                    <button class="menu-button d-flex flex-column" onclick="openMenu()" style="
+                        height: 50px;
+                    "><span class="menuspan-top"></span><span class="menuspan-bottom"></span></button>
+
+                    <span class="company-name">@UserManager.GetUserAsync(User).Result.Company</span>
+
+                    <div class="header-bumper">
+
+                    </div>
+
+                </div>
+            </nav>
+        }
+    </header>
+
+
+    <div class="overlay" id="overlay" onclick="closeMenu()"></div>
+    <div class="menu-container" id="sideMenu">
+        <button class="menu-button" style="right: 15px; left: auto;" onclick="closeMenu()">&times;</button>
+        @if (SignInManager.IsSignedIn(User)){
+            var user = await UserManager.GetUserAsync(User);
+            var dbTrip = _context.Trips.Where(t => t.UserCompany == user.Id).ToList();
+            List<TripSummary> trips = dbTrip.Select(dt =>
+            {
+                var t = JsonConvert.DeserializeObject<TripSummary>(dt.Details);
+                t.Id = dt.Id;
+                return t;
+            }).ToList();
+            <div class="d-flex flex-column flex-grow-1">
+
+                <div class="search-box">
+                    <i class="fa fa-search"></i>
+                    <input type="text" class="trip-search" placeholder="For Tail #/Trip">
+                </div>
+
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Trip" asp-action="Index">
+                            <img src="~/img/PlanTrip.svg" width="20" /> Plan a Trip
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Fleet" asp-action="Index">
+                            <img src="~/img/ManageFleet.svg" width="20" style="transform: scaleX(-1);"/> Manage Fleet
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Fleet" asp-action="SavingsAccrued">
+                            <img src="~/img/SavingsAccruedIcon.png" width="20"/> Savings Accrued
+                        </a>
+                    </li>
+                </ul>
+                <hr />
+                @{
+                    bool isAdmin = await UserManager.IsInRoleAsync(user, "Admin"); 
+                }
+                @if(isAdmin){
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Companies">
+                            Manage Companies
+                        </a>
+                    </li>
+                </ul>
+                <hr />
+
+                }
+            <partial name="_PreviousFlights" model="trips"/>
+            </div>
+        }
+        else {<div></div>}
+                    
+        <partial name="_LoginPartial.cshtml" />
+    </div>
+
+
+    <div class="container">
+        <main role="main" class="">
+            @RenderBody()
+        </main>
+    </div>
+
+    @await RenderSectionAsync("LoginActions", required: false)
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib//jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.0/js/dataTables.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,99 @@
+﻿@{
+    ViewData["Title"] = "Plan a Trip";
+}
+
+<div class="logo">
+    <img src="~/img/skyIQmini.svg" class="skyiq-logo mb-4">
+</div>
+<div class="actions plan-trip-index">
+    <a class="card-btn" asp-area="" asp-controller="Trip" asp-action="PlanTrip">
+        <div class="title">No Itinerary</div>
+        <div class="description">Plan a trip without an exisiting itinerary</div>
+    </a>
+    @* <h1 class="display-4 mb-4">Plan a Trip</h1>     *@
+    <form class="plan-trip-form" asp-action="PlanTrip" method="post" enctype="multipart/form-data">
+      <!---  <div>
+            <label for="formFile" class="dropzone" id="dropzone">
+                <p>Upload your itinerary</p>
+                <button type="button" class="btn btn-outline-secondary">Choose File</button>
+                <p id="file-name">No file chosen</p>
+            </label>
+            <input class="file-input" type="file" name="formFile" id="formFile" required accept=".pdf">
+        </div>--->
+
+        <div class="upload-container">
+            <input type="file" name="formFile" class="file-input" accept="application/pdf" id="fileInput" required>
+            <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
+                <i class="fas fa-file-pdf file-icon"></i>
+                <span class="file-name">Upload Itinerary HERE</span>
+                <button class="remove-btn" onclick="removeFile(event)" type="button"><i class="fas fa-times"></i></button>
+            </div>
+
+            <span class="field-validation-error">No trip detected. Please select a file and try again.</span>
+            <div>
+                <button class="btn btn-upload-submit" type="submit"><i class="fas fa-arrow-right"></i></button>
+                <div>Next</div>
+            </div>
+           <!-- <div class="upload-button" onclick="document.getElementById('fileInput').click()"></div>--->
+        </div>
+
+    </form>
+</div>
+<!-- Modal -->
+<partial name="/Views/Shared/_LoadingModal.cshtml" />
+
+@section Scripts {
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("form.plan-trip-form").validate()
+        $("form.plan-trip-form").on("submit", function(e){
+            if($(this).find("#fileInput").val().length == 0){
+                e.preventDefault();
+                $(".upload-container .field-validation-error").show()
+            }
+            else {
+                $("#loadingModal").modal('show');
+            }
+        })
+    })
+</script>
+}
+<style>
+    html, body {
+        height: 100%
+    }
+
+    main, .container, .logo {
+        height: calc(100vh - 90px);
+        padding: 0;
+    }
+
+    body, main, .container, .logo {
+        margin-bottom: 0;
+    }
+
+    .logo {
+        align-content: center;
+    }
+
+    img.skyiq-logo {
+        display: block;
+        max-width: 200px;
+        margin: 1em auto;
+    }
+
+    .actions {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        align-items: center;
+        padding: 2rem;
+        justify-content: center;
+    }
+
+    a.card-btn {
+        background-color: white;
+    }
+</style>
+

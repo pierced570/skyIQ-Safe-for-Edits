@@ -1,0 +1,184 @@
+﻿@model ApplicationUser
+@{
+    ViewData["title"] = "Settings"; 
+    int daysRemaining = 30 - DateTime.Now.Subtract(Model.CreatedOn).Days;
+}
+
+<div class="container">
+    <form class="edit-user-form" asp-action="Settings" method="post" enctype="multipart/form-data">
+        <h1>Edit User</h1>
+        <div class="row mb-2">
+            <label class="col col-4" asp-for="FirstName">First Name</label>
+            <input class="col" asp-for="FirstName" required/>
+        </div>
+        <div class="row mb-2">
+            <label class="col col-4" asp-for="LastName">Last Name</label>
+            <input class="col" asp-for="LastName" required/>
+        </div>
+        <div class="row mb-2">
+            <label class="col col-4" asp-for="Email">Email</label>
+            <input class="col" asp-for="Email" type="email" required/>
+        </div>
+        <div class="row mb-2">
+            <label class="col col-4" asp-for="Company">Company</label>
+            <input class="col" asp-for="Company" required/>
+        </div>
+        @if (daysRemaining > 0 && Model.RoleName != "Admin")
+        {
+            <div class="row mb-2">
+                <label class="col col-4">Free Trial </label>
+            <input class="col" disabled value="@(daysRemaining) days remaning on your free trial" />
+        </div>
+        }
+        <button class="btn btn-outline-secondary" type="submit">Save changes</button>
+    </form>
+
+    <div class="company-overview mt-4">
+
+        <div class="d-flex justify-content-between">
+            <h2>Platform Overview</h2>
+            <select id="days" class="days-select">
+                <option value="-1" selected>All Time</option>
+                <option value="30">30</option>
+                <option value="60">60</option>
+                <option value="90">90</option>
+            </select>
+        </div>
+        <div class="platform-overview d-flex justify-content-between">
+            <div class="section">
+                <div class="h1" id="est-savings"></div>
+                <p class="title">Est. Savings</p>
+            </div>
+            <div class="section">
+                <div class="h1" id="trips-run"></div>
+                <p class="title">Trips Run</p>
+            </div>
+            <div class="section">
+                <div class="h1" id="num-tails"></div>
+                <p class="title">Tails</p>
+            </div>
+        </div>
+        <h3>Trips/Tails</h3>
+        <div class="company-search">
+            <input id="search" type="text" placeholder="Search Company or Tail Number" />
+        </div>
+        <table id="tails" class="table">
+            <thead>
+                <tr>
+                    <th>Company</th>
+                </tr>
+            </thead>
+            <tbody>              
+                <tr>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("form.edit-user-form").validate({
+            submitHandler: () => {
+                form.submit;
+            }
+        })
+
+        var table = $("#tails").DataTable({
+            serverSide: true,
+            dom: 'lrt',
+            paging: false, 
+            info: false,
+            ajax: {
+                url: '/User/GetCompanyTails',
+                type: 'POST',
+                data: function(d) {
+                    d.days = $("#days").val();
+                },
+                "dataSrc": function (json) {
+                    var days = $("#days").val();
+                    if(days = -1){
+                        days = "All Time"
+                    }
+                    $("#est-savings").text(json.savings);
+                    $("#trips-run").text(json.tripsRun);
+                    $("#num-tails").text(json.numTails);
+                    
+                    var return_data = new Array();
+
+                    for (var i = 0; i < json.tails.length; i++) {
+                        console.log(json.tails[i])
+                        var tail = json.tails[i] 
+                        var lastRun = tail.lastRun == null ? "No trips run" : new Date(tail.lastRun).toLocaleDateString("en-US", {year: "numeric", month: "long", day: "numeric"});
+                        
+                        return_data.push({
+                            'tile': `
+                                <div class="tail-card">
+                                    <div class="tail-card-body">
+                                        <h5 class="tail-card-title">${tail.tailNumber}</h5>
+                                        <div class="d-flex">
+                                            <div class="card-section card-left">
+                                                <div class="card-section-title">Trips(${days})</div>
+                                                <div class="card-section-data">${tail.tripsRun}</div>
+                                                <div class="card-section-title">Last Trip Ran</div>
+                                            </div>
+                                            <div class="card-section card-right">
+                                                <div class="card-section-title">Estimated Savings</div>
+                                                <div class="card-section-data">${tail.savings}</div>
+                                                        <div class="card-section-title">${lastRun}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `
+                        });
+
+                    }
+                    return return_data;
+                }
+            },
+            columns: [
+                { data: 'tile', "searchable": true, "orderable": false }
+            ]
+        }); 
+
+        $("#search").on("change keyup", function(){
+            table.search($(this).val()).draw();
+        })
+        $("#days").on("change", function(){
+            table.ajax.reload(); 
+        })
+
+    })
+</script>
+}
+
+<style>
+    .tail-card {
+        border-color: #f2f2f2;
+        background-color: #f2f2f2;
+        padding: 1rem;
+        border-radius: 10px;
+    }
+
+    .tail-card-title {
+        font-size: 2rem;
+        font-weight: bold;
+    }
+    .card-section {
+        width: 50%;
+    }
+    .card-left {
+        border-right: 2px solid lightgray;
+        margin-right: 1rem;
+    }
+    .card-right {
+        padding-left: 1rem;
+    }
+    .card-section-data {
+        font-size: 1.5rem;
+        margin-bottom: .8rem;
+    }
+</style>

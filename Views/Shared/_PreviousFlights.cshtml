@@ -1,0 +1,22 @@
+﻿@model List<TripSummary>
+
+
+<div class="prev-trips">
+    <div class="prev-trips-title">Previous Trips</div>
+    @if (Model.Count() == 0)
+    {
+        <p>No previous trips to display</p>
+    }
+    else
+    {
+        foreach (TripSummary trip in Model.OrderByDescending(t => t.Id).Take(10).ToList())
+        {
+            var departures = trip.Legs.Select(l => l.Departure).ToList();
+            <a class="prev-trip" asp-controller="Trip" asp-action="TripSummary" asp-route-id="@trip.Id">
+                <div class="title">Trip @(trip.ItineraryNum ?? trip.Id.ToString()) - @trip.AircraftNumber </div>
+                <div class="description">View: @string.Join(", ", departures)</div>
+            </a>
+        }
+    }
+</div>
+<hr class="prev-trips-hr"/>

@@ -1,0 +1,56 @@
+﻿@model TripSummary
+@{
+    ViewData["Title"] = "Trip Summary";
+    string aircraftName = ViewData["AircraftName"].ToString();
+}
+
+<div class="container summary-pdf">
+    <h1 class="display-4">Trip @(Model.ItineraryNum ?? Model.Id.ToString()) Summary</h1>
+    <div class="full-summary">
+        <p class=""><span class="fw-bold">Quick Ref Fuel Plan</span> for flight on @aircraftName <span class="fw-bold" style="text-decoration: underline;">@Model.AircraftNumber</span></p>
+        <div class="trip-summary">
+            @for (int i = 0; i < Model.Legs.Count(); i++)
+            {
+                TripSummaryLeg leg = Model.Legs[i];
+                <div class="leg">
+                    <div class="row title-row">
+                        <div class="col fw-semibold">@leg.Departure --> @leg.Arrival</div>
+                    </div>
+                    <div class="row body-row">
+                        <div class="col col-6 fw-semibold">Uplift (gal., lbs.)</div>
+                        <div class="col col-6 fw-semibold">@Math.Round(leg.FuelUpliftGals) gal., @Math.Round(leg.FuelUpliftLbs) lbs.</div>
+                        <div class="col col-6">Starting Fuel (lbs.)</div>
+                        <div class="col col-6">@Math.Round(leg.StartFuel) lbs.</div>
+                        <div class="col col-6">Fuel Burn</div>
+                        <div class="col col-6">@Math.Round(leg.FuelBurn) lbs.</div>
+                        <div class="col col-6">Waived Fees (y/n)</div>
+                        <div class="col col-6">@(leg.HasWaivedFee ? (leg.FuelCost < leg.TotalCost ? "No; min required " + leg.FeeMin : "Yes; min required " + leg.FeeMin) : "No fees")</div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="leg">Total Cost: <strong>@string.Format("{0:C}", Model.Legs.Select(l => l.TotalCost).Sum())</strong></div>
+    </div>
+</div>
+
+@section Scripts {
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#sideMenu").hide()
+    })
+</script>
+
+<style>
+    body {
+        margin-bottom: 0;
+    }
+
+    .leg {
+        page-break-inside: avoid;
+        page-break-after: auto
+    }
+    .col {
+        padding: .3rem .5rem;
+    }
+</style>
+}

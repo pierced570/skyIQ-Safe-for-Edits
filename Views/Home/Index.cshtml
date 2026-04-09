@@ -1,0 +1,75 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    List<TripSummary> trips = (List<TripSummary>)ViewData["Trips"];
+}
+<div class="logo">
+    <img src="~/img/skyIQmini.svg" class="skyiq-logo mb-4">
+</div>
+
+<div class="actions home">
+    <a class="card-btn" asp-area="" asp-controller="Trip" asp-action="Index">
+        <div class="title">Plan a trip</div>
+        <div class="description">Fool-proof fuel planning</div>
+    </a>
+    <a class="card-btn" asp-controller="Fleet" asp-action="Index">
+        <div class="title">Manage Fleet</div>
+        <div class="description">View/Edit aircraft, add tail#'s</div>
+    </a>
+</div>
+
+
+@section Scripts {
+<script type="text/javascript">
+    $(document).ready(function() {
+        
+    })
+</script>
+}
+<style>
+    html, body {
+        height: 100%
+    }
+
+    main, .container, .logo {
+        height: calc(100vh - 110px);
+        padding: 0;
+    }
+
+    body, main, .container, .logo {
+        margin-bottom: 0;
+    }
+
+    .logo {
+        align-content: center;
+    }
+
+    img.skyiq-logo {
+        display: block;
+        max-width: 2500px;
+        margin: 1em auto;
+    }
+
+    .actions {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        align-items: center;
+        padding: 2rem;
+        justify-content: center;
+    }
+    a.card-btn {
+        background-color: white;
+        max-width: 300px;
+        border-width: 3px;
+        display: block;
+        width: fit-content;
+    }
+    .card-btn .title {
+        font-size: 13px;
+    }
+
+    .card-btn .description {
+        font-size: 12px;
+    }
+</style>
